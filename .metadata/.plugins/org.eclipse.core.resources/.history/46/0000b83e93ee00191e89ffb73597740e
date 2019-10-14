@@ -1,0 +1,131 @@
+package UI;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class MapPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener  {
+	
+	private final Image mapImage;
+	private MainFrame parent;
+	
+    private float prevZoomAount = 1f;
+    private float maximumZoom;
+    private float xOffset = 0f;
+    private float zoomAmount = 1f;
+    private float yOffset = 0f;
+	
+	public MapPanel(MainFrame parent, String image) {
+		this.parent = parent;
+		this.mapImage = new ImageIcon(image).getImage();
+		
+		addMouseWheelListener(this);
+	}
+	
+	@Override
+    protected void processMouseWheelEvent(MouseWheelEvent eventArgs) {
+        //Zoom in
+        if (eventArgs.getWheelRotation() < 0) {
+            zoomFactor *= 1.1;
+            repaint();
+        }
+        //Zoom out
+        if (eventArgs.getWheelRotation() > 0) {
+            zoomFactor /= 1.1;
+            repaint();
+        }
+        super.processMouseWheelEvent(eventArgs);
+    }
+	
+	@Override
+    public Dimension getPreferredSize() {
+		if (mapImage == null) {
+			return parent.getSize();
+		}
+        return new Dimension(mapImage.getWidth(null), mapImage.getHeight(null));
+    }
+	
+	@Override
+	public void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+	    Graphics2D g2 = (Graphics2D) g;
+        AffineTransform at = new AffineTransform();
+
+        double xRel = MouseInfo.getPointerInfo().getLocation().getX() - getLocationOnScreen().getX();
+        double yRel = MouseInfo.getPointerInfo().getLocation().getY() - getLocationOnScreen().getY();
+
+        double zoomDiv = zoomFactor / prevZoomFactor;
+
+        xOffset = (zoomDiv) * (xOffset) + (1 - zoomDiv) * xRel;
+        yOffset = (zoomDiv) * (yOffset) + (1 - zoomDiv) * yRel;
+
+        at.translate(xOffset, yOffset);
+        at.scale(zoomFactor, zoomFactor);
+        prevZoomFactor = zoomFactor;
+        g2.transform(at);
+	    
+	    g2.drawImage(mapImage,  0,  0,  null);
+	    // All drawings go here
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent eventArgs) {
+
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent eventArgs) {
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent eventArgs) {
+
+	}
+}

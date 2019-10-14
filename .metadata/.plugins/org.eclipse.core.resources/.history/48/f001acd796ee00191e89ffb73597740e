@@ -1,0 +1,232 @@
+package UI;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+public class MapPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener  {
+	
+	/**
+	 * This is the image of the map. 
+	 */
+	private final Image mapImage;
+	
+	/**
+	 * This is the UI component in which this MapPanel is contained. 
+	 */
+	private MainFrame parent;
+	
+	/**
+	 * The previous amount that the user had zoomed (updated in repaint()).
+	 */
+	private double prevZoomAount = 1;
+
+	/** 
+	 * Used to zoom relative to the mouse pointer's location.
+	 */
+	private double xOffset = 0;
+	
+	/** 
+	 * Used to zoom relative to the mouse pointer's location.
+	 */	
+	private double yOffset = 0;
+	
+	/**
+	 * The current amount of zoom.
+	 */
+	private double currentZoomAmount = 1;
+	
+	/**
+	 * How fast zooming "zooms" in and out.
+	 */
+	private final double zoomSpeed = 1.1;
+	
+	/**
+	 * The maximum amount in which the user can zoom in. This exists to prevent 
+	 * the user from being able to zoom in indefinitely.
+	 * 
+	 * The dual to {@link maxZoomOut}.
+	 */
+	private double maxZoomIn = 5.0;
+	
+	/**
+	 * The maximum amount in which the user can zoom out. This exists to prevent 
+	 * the user from being able to zoom out indefinitely.
+	 * 
+	 * The dual to {@link maxZoomIn}.
+	 */
+	private double maxZoomOut = 0.1;
+	
+	private Point mouseDragStart;
+	
+	private double translateX = 0;
+	private double translateY = 0;
+	
+	private boolean shouldTranslate = false;
+	
+	public MapPanel(MainFrame parent, String image) {
+		this.parent = parent;
+		this.mapImage = new ImageIcon(image).getImage();
+		
+		addMouseWheelListener(this);
+	}
+	
+	/**
+	 * Clamp the zoom between {@link maxZoomIn} and {@link maxZoomOut} to ensure 
+	 * the user cannot zoom out or zoom in indefinitely. 
+	 */
+	private void clampZoom() {
+		if (currentZoomAmount > maxZoomIn)
+			currentZoomAmount = maxZoomIn;
+		else if (currentZoomAmount < maxZoomOut)
+			currentZoomAmount = maxZoomOut;
+	}
+	
+	/**
+	 * Handles mouse scroll events triggered by the user.
+	 */
+	@Override
+    protected void processMouseWheelEvent(MouseWheelEvent eventArgs) {
+		// Determine if the user was attempting to zoom in or zoom out based on whether
+		// or not the mouse wheel was rotated up or down.
+        if (eventArgs.getWheelRotation() < 0) {
+        	// Zoom in, then make sure user is within the configured "zoom bounds" by calling clampZoom
+        	currentZoomAmount *= zoomSpeed;
+            System.out.println("Zoom Amount: " + currentZoomAmount);
+            clampZoom();
+            repaint();
+        }
+        if (eventArgs.getWheelRotation() > 0) {
+        	// Zoom out, then make sure user is within the configured "zoom bounds" by calling clampZoom
+        	currentZoomAmount /= zoomSpeed;
+            System.out.println("Zoom Amount: " + currentZoomAmount);
+            clampZoom();
+        	repaint();
+        }
+        super.processMouseWheelEvent(eventArgs);
+    }
+	
+	/**
+	 * This is related to the UI. We must specify a "preferred size" for this element in order for a parental "scroll pane" to work properly.
+	 */
+	@Override
+    public Dimension getPreferredSize() {
+		if (mapImage == null) {
+			return parent.getSize();
+		}
+        return new Dimension(mapImage.getWidth(null), mapImage.getHeight(null));
+    }
+	
+	/**
+	 * Draw the map (and possibly other things).
+	 */
+	@Override
+	public void paintComponent(Graphics g) {
+	    super.paintComponent(g);
+	    Graphics2D g2 = (Graphics2D) g;
+	    
+	    // We use an AffineTransform to scale the image in order to provide zoom functionality.
+        AffineTransform zoomTransform = new AffineTransform();
+
+        // Get the location of the mouse pointer relative to this UI element. We get the mouse pointer's location
+        // as well as the location of "this" UI element (the MapPanel component) to calculate the relative x. 
+        double relativeX = MouseInfo.getPointerInfo().getLocation().getX() - getLocationOnScreen().getX();
+        double relativeY = MouseInfo.getPointerInfo().getLocation().getY() - getLocationOnScreen().getY();
+
+        // The amount the zoom has changed relative to the prev. zoom. 
+        double zoomRatio = currentZoomAmount / prevZoomAount;
+
+        // We translate the image to allow us to "zoom in/out" relative to the mouse pointer's location.
+        // We must first calculate how much to translate the image based on the zoom ratio.
+        xOffset = (zoomRatio * xOffset) + (1 - zoomRatio) * relativeX;
+        yOffset = (zoomRatio * yOffset) + (1 - zoomRatio) * relativeY;
+
+        // Apply the translation and then the scaling (zoom). Update prev. zoom amount value.
+        zoomTransform.translate(xOffset, yOffset);
+        zoomTransform.scale(currentZoomAmount, currentZoomAmount);
+        prevZoomAount = currentZoomAmount;
+        g2.transform(zoomTransform);
+	    
+        if (shouldTranslate) {
+        	AffineTransform translateTransform = new AffineTransform();
+        	
+        	// Need to add the offsets in order to get this to work properly w/zooming.
+        	translateTransform.translate(xOffset + translateX, yOffset + translateY);
+        	
+        	
+        	
+        	shouldTranslate = false;
+        }
+        
+        // Draw the image on the screen with transformation applied.
+	    g2.drawImage(mapImage,  0,  0,  null);
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseDragged(MouseEvent eventArgs) {
+		Point currentPoint = eventArgs.getLocationOnScreen();
+		
+		translateX = currentPoint.x - mouseDragStart.x;
+		translateY = currentPoint.y - mouseDragStart.y;
+		
+		shouldTranslate = true;
+		repaint();
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent eventArgs) {
+		// getPoint() is relative to the source component.
+		mouseDragStart = eventArgs.getPoint();
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent eventArgs) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent eventArgs) {
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent eventArgs) {
+		shouldTranslate = true;
+		repaint(); // Drag ended so repaint.
+	}
+}
