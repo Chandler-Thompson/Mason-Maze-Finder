@@ -1,0 +1,132 @@
+package UI;
+import java.awt.EventQueue;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import java.awt.GridLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.Color;
+import java.awt.Dimension;
+
+import javax.swing.JSplitPane;
+import javax.swing.JViewport;
+import javax.swing.SwingConstants;
+import javax.swing.JScrollPane;
+
+public class MainWindow {
+
+	private MainFrame frame;
+	
+	private static final int width = 1280;
+	private static final int height = 720;
+	private static final float resizeWeight = 0.3333f;
+	private static final float dividerLocation = 0.3333f;
+
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					MainWindow window = new MainWindow();
+					window.frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the application.
+	 */
+	public MainWindow() {
+		initialize();
+	}
+
+	/**
+	 * Initialize the contents of the frame.
+	 */
+	private void initialize() {
+		frame = new MainFrame();
+		frame.setSize(width, height);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		GridBagLayout gridBagLayout = new GridBagLayout();
+		gridBagLayout.columnWidths = new int[] {width};
+		gridBagLayout.rowHeights = new int[] {0};
+		gridBagLayout.columnWeights = new double[]{1.0};
+		gridBagLayout.rowWeights = new double[]{1.0};
+		frame.getContentPane().setLayout(gridBagLayout);
+		
+		// Create JPanels for the map and the control area.
+		JPanel controlPanel = new JPanel();
+		JPanel mapPanel = new JPanel();
+		
+		// We use a split pane to divide the UI into two separate sections: controls & map.
+		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapPanel);
+		splitPane.setDividerLocation(dividerLocation);
+		splitPane.setResizeWeight(resizeWeight);
+		
+		//ImageIcon mapIcon = new ImageIcon("G:\\Documents\\School\\College\\Senior Year\\CS 321\\Course Project\\Workspace\\CS321CourseProject\\src\\Res\\campus_map.png");
+		ImageIcon mapIcon = new ImageIcon("src\\Res\\campus_map.png");
+		JLabel mapImageLabel = new JLabel(mapIcon);
+		
+		MapPanel mapImagePanel = new MapPanel() {
+			private double zoomFactor = 1;
+			private double prevZoomFactor = 1;
+			private boolean zoomer;
+			
+			@Override
+			public void paintComponent(Graphics g) {
+			    super.paint(g);
+			    Graphics2D g2 = (Graphics2D) g;
+			    if (zoomer) {
+			        AffineTransform at = new AffineTransform();
+			        at.scale(zoomFactor, zoomFactor);
+			        prevZoomFactor = zoomFactor;
+			        g2.transform(at);
+			        zoomer = false;
+			    }
+			    // All drawings go here
+			}
+		};
+		
+		mapImageLabel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
+		JScrollPane scrollPane = new JScrollPane(mapImageLabel) {	
+			@Override
+		    protected void processMouseWheelEvent(MouseWheelEvent e) {
+				if (frame.getControlPressed()) 
+					System.out.println("Yeet");
+		        super.processMouseWheelEvent(e);
+		    }
+		};
+		
+		scrollPane.getVerticalScrollBar().setUnitIncrement(12);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(12);
+		
+		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
+		mapPanel.add(scrollPane);
+		splitPane.setOrientation(SwingConstants.VERTICAL);
+		splitPane.setBackground(Color.GREEN);
+		GridBagConstraints gbc_splitPane = new GridBagConstraints();
+		gbc_splitPane.weighty = 1.0;
+		gbc_splitPane.weightx = 1.0;
+		gbc_splitPane.insets = new Insets(0, 0, 5, 0);
+		gbc_splitPane.fill = GridBagConstraints.BOTH;
+		gbc_splitPane.gridx = 0;
+		gbc_splitPane.gridy = 0;
+		frame.getContentPane().add(splitPane, gbc_splitPane);
+	}
+
+}
