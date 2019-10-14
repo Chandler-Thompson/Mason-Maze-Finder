@@ -1,6 +1,5 @@
 package UI;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -205,7 +204,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         prevZoomAount = currentZoomAmount;
         g2.transform(transform);
         
-        // Update the current image bounds based on the transform. Useful for determining if used click image and where. 
         imageBounds = transform.createTransformedShape(new Rectangle(mapImage.getWidth(null), mapImage.getHeight(null))).getBounds2D();
         
     	// printDebugInfo();
@@ -274,7 +272,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		} else {
 			System.out.println("Click at " + clicked + ". (Image NOT clicked!)");
 		}
-		// System.out.println("Current Image Bounds: " + imageBounds);
+		System.out.println("Current Image Bounds: " + imageBounds);
 	}
 
 	@Override

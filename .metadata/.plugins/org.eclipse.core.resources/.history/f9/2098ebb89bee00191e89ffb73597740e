@@ -1,6 +1,5 @@
 package UI;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -16,7 +15,6 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
@@ -105,8 +103,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 * This flag indicates whether or not we need to do that. Used in repaint().
 	 */
 	private boolean updateOffsetsOnTranslate = false;
-	
-	private Rectangle2D imageBounds = null;
 	
 	public MapPanel(MainFrame parent, String image) {
 		this.parent = parent;
@@ -205,9 +201,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         prevZoomAount = currentZoomAmount;
         g2.transform(transform);
         
-        // Update the current image bounds based on the transform. Useful for determining if used click image and where. 
-        imageBounds = transform.createTransformedShape(new Rectangle(mapImage.getWidth(null), mapImage.getHeight(null))).getBounds2D();
-        
     	// printDebugInfo();
         
         // Draw the image on the screen with transformation applied.
@@ -224,7 +217,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		int _w = (int)(currentZoomAmount * w);
 		int _h = (int)(currentZoomAmount * h);
 		
-		rect.grow(_w, _h);
+		rect.grow(, currentZoomAmount);
 		
 		return rect;
 	}
@@ -267,14 +260,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 
 	@Override
 	public void mouseClicked(MouseEvent eventArgs) {
-		Point clicked = eventArgs.getPoint();
-		
-		if (imageBounds.contains(clicked)) {
-			System.out.println("Click at " + clicked + ". (Image clicked!)");
-		} else {
-			System.out.println("Click at " + clicked + ". (Image NOT clicked!)");
-		}
-		// System.out.println("Current Image Bounds: " + imageBounds);
+		System.out.println("Click at " + eventArgs.getPoint());
 	}
 
 	@Override
