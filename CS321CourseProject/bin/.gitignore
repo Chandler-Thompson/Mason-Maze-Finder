@@ -1,6 +1,6 @@
-/Res/
-/UI/
-/Map/
 /Pathfinding/
-/Networking/
 /User/
+/Networking/
+/Map/
+/Common/
+/UI/
