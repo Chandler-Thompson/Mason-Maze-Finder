@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+@SuppressWarnings("serial")
 public class MapPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener  {
 	
 	private final Image mapImage;
