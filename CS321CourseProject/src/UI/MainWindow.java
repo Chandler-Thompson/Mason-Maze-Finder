@@ -64,7 +64,6 @@ public class MainWindow {
 	/**
 	 * Initialize the contents of the frame.
 	 */
-	@SuppressWarnings("serial")
 	private void initialize() {
 		frame = new MainFrame();
 		frame.setSize(width, height);
