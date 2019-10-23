@@ -1,12 +1,12 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Node {
+public class Node { //add getNodeListSize and checking if current node exist in list & then add node to list
     private List <Node> nodeList = new ArrayList<Node>();
     private int id;
     private String nodeLabel;
 
-    public Node(int id, String label, List<Node> nodeList)
+    public Node(int id, String label, List<Node> nodeList) 
     {
         this.id = id;
         this.nodeList = nodeList;
