@@ -305,8 +305,4 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		
 		repaint(); // Drag ended so repaint.
 	}
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 30e6cb2873eb3328c7dc9224bfba2f23b2a9520a
