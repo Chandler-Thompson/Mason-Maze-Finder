@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename field &apos;zoomAmount&apos; in &apos;UI.MapPanel&apos; to &apos;currentZoomAmount&apos;&#x0D;&#x0A;- Original project: &apos;CS321CourseProject&apos;&#x0D;&#x0A;- Original element: &apos;UI.MapPanel.zoomAmount&apos;&#x0D;&#x0A;- Renamed element: &apos;UI.MapPanel.currentZoomAmount&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" delegate="false" deprecate="false" description="Rename field &apos;zoomAmount&apos;" flags="589826" getter="false" id="org.eclipse.jdt.ui.rename.field" input="/src&lt;UI{MapPanel.java[MapPanel^zoomAmount" name="currentZoomAmount" references="true" setter="false" stamp="1571066301867" textual="false" version="1.0"/>
-</session>
