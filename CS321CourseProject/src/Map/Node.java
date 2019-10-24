@@ -1,6 +1,7 @@
 package Map;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ enum Terrain{
 	WALKABLE, BLOCKED
 }
 
-public class Node {
+public class Node implements Serializable {
     private Node topNode;
     private Node leftNode;
     private Node rightNode;
