@@ -36,6 +36,7 @@ public class MainWindow {
 	
 	private static final String regularCampusMapPath = "src\\Res\\campus_map.png";
 	private static final String campusMapForNodes = "src\\Res\\CampusMapForNodes.png";
+	private static final String campusMapForNodesJpg = "src\\Res\\CampusMapForNodes.jpg";
 
 	private String imagePath = null;
 	
@@ -46,7 +47,7 @@ public class MainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow window = new MainWindow(regularCampusMapPath);
+					MainWindow window = new MainWindow(campusMapForNodesJpg);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
