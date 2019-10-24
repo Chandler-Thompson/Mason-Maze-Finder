@@ -116,7 +116,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	private double translateY = -9;
 	
-	private String imagePath = null;
+	private String displayImagePath = null;
+	private String nodesImagePath = null;
 	
 	/**
 	 * Indicates whether or not the user has clicked-and-dragged since the last draw.
@@ -141,6 +142,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	
 	private EdgelessNode[][] edgelessNodes = null;
 	
+	private boolean serializationEnabled = false;
+	
 	/**
 	 * Used to draw circles at last-clicked nodes.
 	 */
@@ -162,10 +165,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	private final double scaleX = 0.4000415627597672485453034081463;
 	private final double scaleY = 0.3998330550918196994991652754591;
 	
-	public MapPanel(MainFrame parent, String imagePath) {
+	public MapPanel(MainFrame parent, String displayImagePath, String nodesImagePath) {
 		this.parent = parent;
-		this.imagePath = imagePath;
-		this.mapImage = new ImageIcon(imagePath).getImage();
+		this.displayImagePath = displayImagePath;
+		this.nodesImagePath = nodesImagePath;
+		this.mapImage = new ImageIcon(displayImagePath).getImage();
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -173,7 +177,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		
 		try {
 			File nodesFile = new File(nodesSavePath);
-			if (nodesFile.exists()) {
+			if (serializationEnabled && nodesFile.exists()) {
 				System.out.println("Loading nodes from file...");
 				long start = System.nanoTime();
 		        FileInputStream fileInputStream = new FileInputStream(nodesSavePath);
@@ -218,16 +222,18 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 				System.out.println("Generating node grid from image done. Took " + elapsedSecondsFromPicture + " seconds.");
 				System.out.println("Serializing the nodes array...");
 				
-				// Serialize them so they're available next time.
-				long startSerializing = System.nanoTime();
-		        FileOutputStream fileOutputStream = new FileOutputStream(nodesSavePath);
-		        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-		        objectOutputStream.writeObject(edgelessNodes);
-		        long doneSerializing = System.nanoTime();
-		        double elapsedSerializing = (doneSerializing - startSerializing) / 1000000000.0;
-		        System.out.println("Done serializing. Took " + elapsedSerializing + " seconds.");
-		        
-		        objectOutputStream.close();
+				if (serializationEnabled) {
+					// Serialize them so they're available next time.
+					long startSerializing = System.nanoTime();
+			        FileOutputStream fileOutputStream = new FileOutputStream(nodesSavePath);
+			        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+			        objectOutputStream.writeObject(edgelessNodes);
+			        long doneSerializing = System.nanoTime();
+			        double elapsedSerializing = (doneSerializing - startSerializing) / 1000000000.0;
+			        System.out.println("Done serializing. Took " + elapsedSerializing + " seconds.");
+			        
+			        objectOutputStream.close();					
+				}
 		        edgelessNodes = null;
 			}
 		} catch (Exception e) {
@@ -240,7 +246,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	private void loadNodes() throws IOException {
 		System.out.println("Generating grid of nodes using image...");
-		BufferedImage bufferedMapImage = ImageIO.read(new File(imagePath));
+		BufferedImage bufferedMapImage = ImageIO.read(new File(this.nodesImagePath));
 		//BufferedImage bufferedMapImage = ImageIO.read(MapPanel.class.getResource("C:\\Users\\Benjamin\\Documents\\School\\Fall 2019\\CS 321\\CS321\\CS321CourseProject\\src\\Res\\CampusMapForNodes.png"));
 		byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
 		
@@ -384,7 +390,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         // Update the current image bounds based on the transform. Useful for determining if used click image and where. 
         imageBounds = transform.createTransformedShape(new Rectangle(mapImage.getWidth(null), mapImage.getHeight(null))).getBounds2D();
         
-    	printDebugInfo();
+    	// printDebugInfo();
         
         if (displayValidNodes ) {
         	displayValidNodes = false;
@@ -407,12 +413,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	else {
         		g2.setColor(Color.RED);
         	}
-        	System.out.println("Filling oval cenetered at (" + c.location.x + "," + c.location.y + ")");
-        	g2.fillOval(c.location.x, c.location.y, 5, 5);
+        	// System.out.println("Filling oval cenetered at (" + c.location.x + "," + c.location.y + ")");
+        	g2.fillOval(c.location.x, c.location.y, 55, 55);
         }
         
         // Draw the image on the screen with transformation applied.
-	    g2.drawImage(mapImage,  0,  0,  null);
+	    // g2.drawImage(mapImage,  0,  0,  null);
 	}
 	
 	private Rectangle getImageBounds() {
@@ -474,7 +480,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			double ratioX = mapImage.getWidth(null) / imageBounds.getWidth();
 			ratioX *= scaleX;
 			double ratioY = mapImage.getHeight(null) / imageBounds.getHeight();
-			ratioY *= ratioY;
+			ratioY *= scaleY;
 			Point adjustedForImage = new Point((int)(ratioX * (clicked.getX() - imageBounds.getX())), 
 											   (int)(ratioY * (clicked.getY() - imageBounds.getY())));
 			Node clickedNode = nodes[adjustedForImage.y][adjustedForImage.x];
