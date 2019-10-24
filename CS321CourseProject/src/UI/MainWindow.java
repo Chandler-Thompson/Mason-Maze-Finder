@@ -38,7 +38,8 @@ public class MainWindow {
 	private static final String campusMapForNodesPath = "src\\Res\\CampusMapForNodes.png";
 	private static final String campusMapForNodesJpgPath = "src\\Res\\CampusMapForNodes.jpg";
 
-	private String imagePath = null;
+	private String displayImagePath = null;
+	private String nodesImagePath = null;
 	
 	/**
 	 * Launch the application.
@@ -47,7 +48,7 @@ public class MainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow window = new MainWindow(regularCampusMapPath);
+					MainWindow window = new MainWindow(regularCampusMapPath, campusMapForNodesJpgPath);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace()	;
@@ -60,8 +61,9 @@ public class MainWindow {
 	 * Create the application.
 	 * @throws IOException 
 	 */
-	public MainWindow(String imagePath) throws IOException {
-		this.imagePath = imagePath;
+	public MainWindow(String displayImagePath, String nodesImagePath) throws IOException {
+		this.displayImagePath = displayImagePath;
+		this.nodesImagePath = nodesImagePath;
 		initialize();
 	}
 
@@ -89,27 +91,14 @@ public class MainWindow {
 		splitPane.setDividerLocation(dividerLocation);
 		splitPane.setResizeWeight(resizeWeight);
 		
-		ImageIcon mapIcon = new ImageIcon(this.imagePath);
+		ImageIcon mapIcon = new ImageIcon(this.displayImagePath);
 		JLabel mapImageLabel = new JLabel(mapIcon);
 		
 		mapImageLabel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		
-		JScrollPane scrollPane = new JScrollPane(mapImageLabel) {	
-			/*@Override
-		    protected void processMouseWheelEvent(MouseWheelEvent e) {
-				if (frame.getControlPressed()) 
-					System.out.println("Yeet");
-		        super.processMouseWheelEvent(e);
-		    }*/
-		};
-		
-		scrollPane.getVerticalScrollBar().setUnitIncrement(12);
-		scrollPane.getHorizontalScrollBar().setUnitIncrement(12);
-		
-		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		MapPanel mapImagePanel = new MapPanel(frame, this.campusMapForNodesJpgPath);
+		MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapPanel.add(mapImagePanel);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
