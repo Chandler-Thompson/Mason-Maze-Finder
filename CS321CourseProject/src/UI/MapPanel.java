@@ -22,6 +22,8 @@ import java.awt.image.DataBufferUShort;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.IOException;
+import java.util.LinkedList;
+
 import javax.imageio.ImageIO;
 
 import javax.swing.ImageIcon;
@@ -55,6 +57,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 * Used to zoom relative to the mouse pointer's location.
 	 */
 	private double xOffset = 6.685615736630126;
+	
+	/**
+	 * Flag used for debugging. 
+	 * Causes dots to be painted on valid nodes just at the beginning.
+	 */
+	private boolean displayValidNodes = false;
 	
 	/** 
 	 * Used to zoom relative to the mouse pointer's location.
@@ -119,6 +127,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	
 	private Node[][] nodes = null;
 	
+	private LinkedList<Clicked> lastTenClicked = new LinkedList<Clicked>();
+	
 	public MapPanel(MainFrame parent, String imagePath) {
 		this.parent = parent;
 		this.imagePath = imagePath;
@@ -143,7 +153,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		System.out.println("Loading nodes...");
 		BufferedImage bufferedMapImage = ImageIO.read(new File(imagePath));
 		//BufferedImage bufferedMapImage = ImageIO.read(MapPanel.class.getResource("C:\\Users\\Benjamin\\Documents\\School\\Fall 2019\\CS 321\\CS321\\CS321CourseProject\\src\\Res\\CampusMapForNodes.png"));
-		short[] pixels = ((DataBufferUShort)bufferedMapImage.getRaster().getDataBuffer()).getData();
+		byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
 		
 		final int width = bufferedMapImage.getWidth();
         final int height = bufferedMapImage.getHeight();
@@ -152,17 +162,18 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	    // https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
 	    // boolean[][] rgbArray = new boolean[height][width];
 	    Node[][] nodes = new Node[height][width];
-    	final int pixelLength = 4;
-    	for (int i = 0, row = 0, col = 0; i + 3 < pixels.length; i += pixelLength) {
+	    final int pixelLength = 3;
+	    for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
     		int argbValue = 0;
     		// The values are stored in the format ARGB (alpha, red, green, blue), so
     		// that's why we compute the offsets the way we do. We also have to mask
     		// the values to extract the specific color value correctly.
-    		argbValue += (((int) pixels[i] & 0xff) << 24); // alpha
-			argbValue += ((int) pixels[i + 1] & 0xff); // blue
-			argbValue += (((int) pixels[i + 2] & 0xff) << 8); // green
-			argbValue += (((int) pixels[i + 3] & 0xff) << 16); // red
-			Node nextNode = new Node(nodeID, "Node " + nodeID++, (argbValue == 1020), row, col, 
+    		argbValue += -16777216; // 255 alpha
+    		argbValue += ((int) pixels[pixel] & 0xff); // blue
+            argbValue += (((int) pixels[pixel + 1] & 0xff) << 8); // green
+            argbValue += (((int) pixels[pixel + 2] & 0xff) << 16); // red
+            boolean valid = (argbValue != -16777216);
+			Node nextNode = new Node(nodeID, "Node " + nodeID++, valid, row, col, 
 					null, null, null, null);
 			nodes[row][col] = nextNode;
 			if (col > 0) {
@@ -282,14 +293,31 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         
     	// printDebugInfo();
         
-        for (int i = 0; i < nodes.length; i++) {
-        	for (int j = 0; j < nodes[i].length; j++) {
-        		Node n = nodes[i][j];
-        		if (n.getValid()) {
-        			g2.setColor(Color.GREEN);
-        			g2.fillOval(i, j, 1, 1);
-        		}
+        if (displayValidNodes ) {
+        	displayValidNodes = false;
+        	
+        	for (int i = 0; i < nodes.length; i++) {
+            	for (int j = 0; j < nodes[i].length; j++) {
+            		Node n = nodes[i][j];
+            		if (n.getValid()) {
+            			g2.setColor(Color.GREEN);
+            			g2.fillOval(j, i, 1, 1);
+            			g2.setColor(Color.PINK);
+            			g2.fillOval(j, i, 1, 1);
+            		}
+            	}
+            }        	
+        }
+        
+        for (Clicked c : lastTenClicked) {
+        	if (c.valid == true) {
+        		g2.setColor(Color.GREEN);
         	}
+        	else {
+        		g2.setColor(Color.RED);
+        	}
+        	System.out.println("Filling oval cenetered at (" + c.location.x + "," + c.location.y + ")");
+        	g2.fillOval(c.location.x, c.location.y, 5, 5);
         }
         
         // Draw the image on the screen with transformation applied.
@@ -350,17 +378,31 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	@Override
 	public void mouseClicked(MouseEvent eventArgs) {
 		Point clicked = eventArgs.getPoint();
-		
+		Clicked c = null;
 		if (imageBounds.contains(clicked)) {
-			Node clickedNode = nodes[clicked.x][clicked.y];
+			double ratioX = mapImage.getWidth(null) / imageBounds.getWidth();
+			double ratioY = mapImage.getHeight(null) / imageBounds.getHeight();
+			Point adjustedForImage = new Point((int)(ratioX * (clicked.getX() - imageBounds.getX())), 
+											   (int)(ratioY * (clicked.getY() - imageBounds.getY())));
+			Node clickedNode = nodes[adjustedForImage.y][adjustedForImage.x];
 			if (clickedNode.getValid()) {
-				System.out.println("Click VALID node at " + clicked + ". (Image clicked!)");
+				System.out.println("Clicked VALID node at image coordinates (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")" + ". (Image clicked!)");
+				c = new Clicked(clicked, true);
 			}			
 			else {
-				System.out.println("Click INVALID node at " + clicked + ". (Image clicked!)");
+				System.out.println("Clicked INVALID node at image coordinates (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")" + ". (Image clicked!)");
+				c = new Clicked(clicked, false);
 			}
+			System.out.println("Screen coordinates = (" + clicked.getX() + "," + clicked.getY() + ")");
 		} else {
 			System.out.println("Click at " + clicked + ". (Image NOT clicked!)");
+		}
+		
+		if (c != null) {
+			lastTenClicked.add(c);
+			
+			if (lastTenClicked.size() > 10) 
+				lastTenClicked.removeFirst();
 		}
 		// System.out.println("Current Image Bounds: " + imageBounds);
 	}
@@ -392,5 +434,15 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		updateOffsetsOnTranslate = true;	// That also means this should now be set to true.
 		
 		repaint(); // Drag ended so repaint.
+	}
+	
+	class Clicked {
+		Point location;
+		boolean valid;
+		
+		public Clicked(Point p, boolean b) {
+			this.location = p;
+			this.valid = b;
+		}
 	}
 }
