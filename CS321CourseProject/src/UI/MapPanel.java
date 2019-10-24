@@ -414,11 +414,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         		g2.setColor(Color.RED);
         	}
         	// System.out.println("Filling oval cenetered at (" + c.location.x + "," + c.location.y + ")");
-        	g2.fillOval(c.location.x, c.location.y, 55, 55);
+        	g2.fillOval(c.location.x, c.location.y, 25, 25);
         }
         
         // Draw the image on the screen with transformation applied.
-	    // g2.drawImage(mapImage,  0,  0,  null);
+	    g2.drawImage(mapImage,  0,  0,  null);
 	}
 	
 	private Rectangle getImageBounds() {
