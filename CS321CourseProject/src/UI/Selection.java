@@ -2,6 +2,8 @@ package UI;
 
 import java.util.ArrayList;
 
+import Map.ClickableNode;
+
 /***
  * 
  * Class for holding and manipulating multiple ClickableNodes at once.

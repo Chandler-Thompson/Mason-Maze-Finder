@@ -18,10 +18,17 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferUShort;
+import java.awt.image.DataBufferByte;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import Map.Node;
 
 public class MapPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener  {
 
@@ -95,6 +102,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	private double translateY = -9;
 	
+	private String imagePath = null;
+	
 	/**
 	 * Indicates whether or not the user has clicked-and-dragged since the last draw.
 	 */
@@ -108,13 +117,76 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	
 	private Rectangle2D imageBounds = null;
 	
-	public MapPanel(MainFrame parent, String image) {
+	private Node[][] nodes = null;
+	
+	public MapPanel(MainFrame parent, String imagePath) {
 		this.parent = parent;
-		this.mapImage = new ImageIcon(image).getImage();
+		this.imagePath = imagePath;
+		this.mapImage = new ImageIcon(imagePath).getImage();
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
+		
+		try {
+			loadNodes();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Load nodes based on RGB of image. Eventually we'll just serialize and deserialize them directly.
+	 */
+	private void loadNodes() throws IOException {
+		System.out.println("Loading nodes...");
+		BufferedImage bufferedMapImage = ImageIO.read(new File(imagePath));
+		//BufferedImage bufferedMapImage = ImageIO.read(MapPanel.class.getResource("C:\\Users\\Benjamin\\Documents\\School\\Fall 2019\\CS 321\\CS321\\CS321CourseProject\\src\\Res\\CampusMapForNodes.png"));
+		short[] pixels = ((DataBufferUShort)bufferedMapImage.getRaster().getDataBuffer()).getData();
+		
+		final int width = bufferedMapImage.getWidth();
+        final int height = bufferedMapImage.getHeight();
+	    
+        int nodeID = 0;	
+	    // https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
+	    // boolean[][] rgbArray = new boolean[height][width];
+	    Node[][] nodes = new Node[height][width];
+    	final int pixelLength = 4;
+    	for (int i = 0, row = 0, col = 0; i + 3 < pixels.length; i += pixelLength) {
+    		int argbValue = 0;
+    		// The values are stored in the format ARGB (alpha, red, green, blue), so
+    		// that's why we compute the offsets the way we do. We also have to mask
+    		// the values to extract the specific color value correctly.
+    		argbValue += (((int) pixels[i] & 0xff) << 24); // alpha
+			argbValue += ((int) pixels[i + 1] & 0xff); // blue
+			argbValue += (((int) pixels[i + 2] & 0xff) << 8); // green
+			argbValue += (((int) pixels[i + 3] & 0xff) << 16); // red
+			Node nextNode = new Node(nodeID, "Node " + nodeID++, (argbValue == 1020), row, col, 
+					null, null, null, null);
+			nodes[row][col] = nextNode;
+			if (col > 0) {
+				Node left = nodes[row][col - 1];
+				left.setRightNode(nextNode);
+				
+				nextNode.setLeftNode(left);
+			}
+			if (row > 0) {
+				Node above = nodes[row - 1][col];
+				above.setBottomNode(nextNode);
+				
+				nextNode.setTopNode(above);
+			}
+			col++;
+			// If we've reached the end of a column, reset the column index to zero and increment row.
+			if (col == width)
+			{
+				col = 0;
+				row++;
+			}
+    	}
+    	
+    	this.nodes = nodes;
 	}
 	
 	/**
@@ -210,6 +282,16 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         
     	// printDebugInfo();
         
+        for (int i = 0; i < nodes.length; i++) {
+        	for (int j = 0; j < nodes[i].length; j++) {
+        		Node n = nodes[i][j];
+        		if (n.getValid()) {
+        			g2.setColor(Color.GREEN);
+        			g2.fillOval(i, j, 1, 1);
+        		}
+        	}
+        }
+        
         // Draw the image on the screen with transformation applied.
 	    g2.drawImage(mapImage,  0,  0,  null);
 	}
@@ -270,7 +352,13 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		Point clicked = eventArgs.getPoint();
 		
 		if (imageBounds.contains(clicked)) {
-			System.out.println("Click at " + clicked + ". (Image clicked!)");
+			Node clickedNode = nodes[clicked.x][clicked.y];
+			if (clickedNode.getValid()) {
+				System.out.println("Click VALID node at " + clicked + ". (Image clicked!)");
+			}			
+			else {
+				System.out.println("Click INVALID node at " + clicked + ". (Image clicked!)");
+			}
 		} else {
 			System.out.println("Click at " + clicked + ". (Image NOT clicked!)");
 		}
