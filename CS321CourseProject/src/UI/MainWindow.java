@@ -29,13 +29,16 @@ public class MainWindow {
 
 	private MainFrame frame;
 	
-	private BufferedImage mapImage;
-	
 	private static final int width = 1280;
 	private static final int height = 720;
 	private static final float resizeWeight = 0.3333f;
 	private static final float dividerLocation = 0.3333f;
+	
+	private static final String regularCampusMapPath = "src\\Res\\campus_map.png";
+	private static final String campusMapForNodes = "src\\Res\\CampusMapForNodes.png";
 
+	private String imagePath = null;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -43,7 +46,7 @@ public class MainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow window = new MainWindow();
+					MainWindow window = new MainWindow(regularCampusMapPath);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -56,9 +59,9 @@ public class MainWindow {
 	 * Create the application.
 	 * @throws IOException 
 	 */
-	public MainWindow() throws IOException {
+	public MainWindow(String imagePath) throws IOException {
+		this.imagePath = imagePath;
 		initialize();
-		mapImage = ImageIO.read(new File("src\\Res\\campus_map.png"));
 	}
 
 	/**
@@ -86,7 +89,7 @@ public class MainWindow {
 		splitPane.setResizeWeight(resizeWeight);
 		
 		//ImageIcon mapIcon = new ImageIcon("G:\\Documents\\School\\College\\Senior Year\\CS 321\\Course Project\\Workspace\\CS321CourseProject\\src\\Res\\campus_map.png");
-		ImageIcon mapIcon = new ImageIcon("src\\Res\\campus_map.png");
+		ImageIcon mapIcon = new ImageIcon(this.imagePath);
 		JLabel mapImageLabel = new JLabel(mapIcon);
 		
 		mapImageLabel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
@@ -106,7 +109,7 @@ public class MainWindow {
 		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		MapPanel mapImagePanel = new MapPanel(frame, "src\\Res\\campus_map.png");
+		MapPanel mapImagePanel = new MapPanel(frame, this.imagePath);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapPanel.add(mapImagePanel);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
