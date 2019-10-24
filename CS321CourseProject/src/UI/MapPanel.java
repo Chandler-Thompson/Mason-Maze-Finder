@@ -21,7 +21,12 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferUShort;
 import java.awt.image.DataBufferByte;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
@@ -30,6 +35,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import Map.EdgelessNode;
 import Map.Node;
 
 public class MapPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener  {
@@ -123,11 +129,38 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	private boolean updateOffsetsOnTranslate = false;
 	
+	/**
+	 * The bounding box of the image, which will be adjusted based on zoom translation.
+	 */
 	private Rectangle2D imageBounds = null;
 	
+	/**
+	 * Grid of nodes.
+	 */
 	private Node[][] nodes = null;
 	
+	private EdgelessNode[][] edgelessNodes = null;
+	
+	/**
+	 * Used to draw circles at last-clicked nodes.
+	 */
 	private LinkedList<Clicked> lastTenClicked = new LinkedList<Clicked>();
+	
+	private final String nodesSavePath = "src\\Res\\nodes.dat";
+	
+	// The image displayed to the user is a much higher resolution than the one
+	// used to generate nodes for a few reasons. Essentially, we want to use a
+	// high-resolution image to display to the user so it looks good. We do not,
+	// however, need as many nodes as we'd get if we use the higher resolution.
+	//
+	// Since the two images are different sizes, however, we need to effectively
+	// scale the coordinates of the smaller image to account for the size difference.
+	//
+	// I computed these values as follows:
+	// scaleX = high_resolution_image.WIDTH / low_resolution_image.WIDTH
+	// scaleY = high_resolution_image.HEIGHT / low_resolution_image.HEIGHT
+	private final double scaleX = 0.4000415627597672485453034081463;
+	private final double scaleY = 0.3998330550918196994991652754591;
 	
 	public MapPanel(MainFrame parent, String imagePath) {
 		this.parent = parent;
@@ -139,9 +172,65 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		addMouseMotionListener(this);
 		
 		try {
-			loadNodes();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			File nodesFile = new File(nodesSavePath);
+			if (nodesFile.exists()) {
+				System.out.println("Loading nodes from file...");
+				long start = System.nanoTime();
+		        FileInputStream fileInputStream = new FileInputStream(nodesSavePath);
+		        ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
+		        this.edgelessNodes = (EdgelessNode[][]) objectInputStream.readObject();
+		        
+		        this.nodes = new Node[edgelessNodes.length][edgelessNodes[0].length];
+		        int nodeID = 0;
+		        for (int i = 0; i < this.edgelessNodes.length; i++) {
+		        	for (int j = 0; j < this.edgelessNodes[i].length; j++) {
+		        		Node n = new Node(nodeID, "Node " + nodeID++, this.edgelessNodes[i][j].getValid(),
+		        							i, j, null, null, null, null);
+		        		nodes[i][j] = n;
+		        		if (i > 0) {
+		        			Node left = nodes[i - 1][j];
+		        			left.setRightNode(n);
+		        			
+		        			n.setLeftNode(left);
+		        		}
+		        		if (j > 0) {
+		        			Node above = nodes[i][j-1];
+		        			above.setBottomNode(n);
+		        			
+		        			n.setTopNode(above);
+		        		}
+		        	}
+		        }
+		        
+		        long done = System.nanoTime();
+		        long elapsed = done - start;
+		        long elapsedSeconds = elapsed / 1000000000;
+		        objectInputStream.close();
+		        edgelessNodes = null;
+		        System.out.println("Loading nodes from file done. Time elapsed: " + elapsedSeconds + " seconds");
+			}
+			else {
+				// File not available. Instead, generate using an image.
+				long startFromPicture = System.nanoTime();
+				loadNodes();
+				long doneFromPicture = System.nanoTime();
+				double elapsedSecondsFromPicture = (doneFromPicture - startFromPicture) / 1000000000.0;
+				System.out.println("Generating node grid from image done. Took " + elapsedSecondsFromPicture + " seconds.");
+				System.out.println("Serializing the nodes array...");
+				
+				// Serialize them so they're available next time.
+				long startSerializing = System.nanoTime();
+		        FileOutputStream fileOutputStream = new FileOutputStream(nodesSavePath);
+		        ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+		        objectOutputStream.writeObject(edgelessNodes);
+		        long doneSerializing = System.nanoTime();
+		        double elapsedSerializing = (doneSerializing - startSerializing) / 1000000000.0;
+		        System.out.println("Done serializing. Took " + elapsedSerializing + " seconds.");
+		        
+		        objectOutputStream.close();
+		        edgelessNodes = null;
+			}
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -150,7 +239,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 * Load nodes based on RGB of image. Eventually we'll just serialize and deserialize them directly.
 	 */
 	private void loadNodes() throws IOException {
-		System.out.println("Loading nodes...");
+		System.out.println("Generating grid of nodes using image...");
 		BufferedImage bufferedMapImage = ImageIO.read(new File(imagePath));
 		//BufferedImage bufferedMapImage = ImageIO.read(MapPanel.class.getResource("C:\\Users\\Benjamin\\Documents\\School\\Fall 2019\\CS 321\\CS321\\CS321CourseProject\\src\\Res\\CampusMapForNodes.png"));
 		byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
@@ -162,6 +251,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	    // https://stackoverflow.com/questions/6524196/java-get-pixel-array-from-image
 	    // boolean[][] rgbArray = new boolean[height][width];
 	    Node[][] nodes = new Node[height][width];
+	    edgelessNodes = new EdgelessNode[height][width];
 	    final int pixelLength = 3;
 	    for (int pixel = 0, row = 0, col = 0; pixel + 2 < pixels.length; pixel += pixelLength) {
     		int argbValue = 0;
@@ -176,6 +266,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			Node nextNode = new Node(nodeID, "Node " + nodeID++, valid, row, col, 
 					null, null, null, null);
 			nodes[row][col] = nextNode;
+			edgelessNodes[row][col] = new EdgelessNode(row, col, valid);
 			if (col > 0) {
 				Node left = nodes[row][col - 1];
 				left.setRightNode(nextNode);
@@ -192,6 +283,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			// If we've reached the end of a column, reset the column index to zero and increment row.
 			if (col == width)
 			{
+				if (row % 250 == 0) 
+					System.out.println("Finished row " + row + "...");
 				col = 0;
 				row++;
 			}
@@ -291,7 +384,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         // Update the current image bounds based on the transform. Useful for determining if used click image and where. 
         imageBounds = transform.createTransformedShape(new Rectangle(mapImage.getWidth(null), mapImage.getHeight(null))).getBounds2D();
         
-    	// printDebugInfo();
+    	printDebugInfo();
         
         if (displayValidNodes ) {
         	displayValidNodes = false;
@@ -301,8 +394,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
             		Node n = nodes[i][j];
             		if (n.getValid()) {
             			g2.setColor(Color.GREEN);
-            			g2.fillOval(j, i, 1, 1);
-            			g2.setColor(Color.PINK);
             			g2.fillOval(j, i, 1, 1);
             		}
             	}
@@ -381,7 +472,9 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		Clicked c = null;
 		if (imageBounds.contains(clicked)) {
 			double ratioX = mapImage.getWidth(null) / imageBounds.getWidth();
+			ratioX *= scaleX;
 			double ratioY = mapImage.getHeight(null) / imageBounds.getHeight();
+			ratioY *= ratioY;
 			Point adjustedForImage = new Point((int)(ratioX * (clicked.getX() - imageBounds.getX())), 
 											   (int)(ratioY * (clicked.getY() - imageBounds.getY())));
 			Node clickedNode = nodes[adjustedForImage.y][adjustedForImage.x];

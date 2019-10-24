@@ -35,8 +35,8 @@ public class MainWindow {
 	private static final float dividerLocation = 0.3333f;
 	
 	private static final String regularCampusMapPath = "src\\Res\\campus_map.png";
-	private static final String campusMapForNodes = "src\\Res\\CampusMapForNodes.png";
-	private static final String campusMapForNodesJpg = "src\\Res\\CampusMapForNodes.jpg";
+	private static final String campusMapForNodesPath = "src\\Res\\CampusMapForNodes.png";
+	private static final String campusMapForNodesJpgPath = "src\\Res\\CampusMapForNodes.jpg";
 
 	private String imagePath = null;
 	
@@ -47,10 +47,10 @@ public class MainWindow {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainWindow window = new MainWindow(campusMapForNodesJpg);
+					MainWindow window = new MainWindow(regularCampusMapPath);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace();
+					e.printStackTrace()	;
 				}
 			}
 		});
@@ -89,7 +89,6 @@ public class MainWindow {
 		splitPane.setDividerLocation(dividerLocation);
 		splitPane.setResizeWeight(resizeWeight);
 		
-		//ImageIcon mapIcon = new ImageIcon("G:\\Documents\\School\\College\\Senior Year\\CS 321\\Course Project\\Workspace\\CS321CourseProject\\src\\Res\\campus_map.png");
 		ImageIcon mapIcon = new ImageIcon(this.imagePath);
 		JLabel mapImageLabel = new JLabel(mapIcon);
 		
@@ -110,7 +109,7 @@ public class MainWindow {
 		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		MapPanel mapImagePanel = new MapPanel(frame, this.imagePath);
+		MapPanel mapImagePanel = new MapPanel(frame, this.campusMapForNodesJpgPath);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapPanel.add(mapImagePanel);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
