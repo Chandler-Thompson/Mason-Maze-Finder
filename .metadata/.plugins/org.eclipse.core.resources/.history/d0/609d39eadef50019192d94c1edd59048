@@ -1,0 +1,4 @@
+
+public class Graph<V,E> implements Graph<V,E>, DirectedGraph<V,E>  {
+	
+}
