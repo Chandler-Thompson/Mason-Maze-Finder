@@ -1,9 +1,0 @@
-In order for your project to support JUNG framework you must add it to its buildpath
-
-to do this in eclipse follow these steps
-	1): Navigate to the build path of your project
-	2): Navigate to the Libraries Tab
-	3): Add External Jars
-	4): Add all jars to libraries tab in this current folder
-
-All done!

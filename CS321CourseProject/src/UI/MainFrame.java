@@ -5,6 +5,7 @@ import java.awt.event.KeyListener;
 
 import javax.swing.JFrame;
 
+@SuppressWarnings("serial")
 public class MainFrame extends JFrame implements KeyListener {
 	private boolean controlPressed = false;
 	
