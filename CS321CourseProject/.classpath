@@ -6,22 +6,5 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/collections-generic-4.01.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/colt-1.2.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/concurrent-1.3.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/j3d-core-1.3.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-3d-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-3d-demos-2.0.1.jar" sourcepath="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungSources/jung-3d-demos-2.0.1-sources.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-algorithms-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-api-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-graph-impl-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-io-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-jai-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-jai-samples-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-samples-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/jung-visualization-2.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/stax-api-1.0.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/vecmath-1.3.1.jar"/>
-	<classpathentry kind="lib" path="C:/Users/ishay/Documents/GitHub/CS321/CS321CourseProject/JungLibrary/wstx-asl-3.2.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
