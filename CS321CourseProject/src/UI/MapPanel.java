@@ -142,6 +142,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	
 	private EdgelessNode[][] edgelessNodes = null;
 	
+	/**
+	 * Number of nodes that are "walkable" 
+	 */
+	public int numberOfValidNodes = 0;
+	
 	private boolean serializationEnabled = false;
 	
 	/**
@@ -269,6 +274,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
             argbValue += (((int) pixels[pixel + 1] & 0xff) << 8); // green
             argbValue += (((int) pixels[pixel + 2] & 0xff) << 16); // red
             boolean valid = (argbValue != -16777216);
+            if (valid)
+            	numberOfValidNodes = numberOfValidNodes + 1;
 			Node nextNode = new Node(nodeID, "Node " + nodeID++, valid, row, col, 
 					null, null, null, null);
 			nodes[row][col] = nextNode;
@@ -308,6 +315,15 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			currentZoomAmount = maxZoomIn;
 		else if (currentZoomAmount < maxZoomOut)
 			currentZoomAmount = maxZoomOut;
+	}
+	
+	public int getNumberNodes(boolean validOnly) {
+		if (!validOnly) {
+			return nodes.length * nodes[0].length;
+		}
+		else {
+			return numberOfValidNodes;
+		}
 	}
 	
 	/**
