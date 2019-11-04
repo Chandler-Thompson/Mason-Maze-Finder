@@ -6,8 +6,8 @@ This is a semester project for GMU CS 321. This application generates "shorest p
 
 This was inspired by the navigation difficulties imposed by the construction projects occurring on-campus. 
 
-## Authors:
+### Authors:
 CS 321 - 005 Team #5 
 
-## Disclaimer:
+### Disclaimer:
 This project is in no way supported or acknowledged by George Mason University. It's just an assignment for CS 321. 
