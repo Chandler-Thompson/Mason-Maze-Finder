@@ -170,6 +170,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	private final double scaleX = 0.4000415627597672485453034081463;
 	private final double scaleY = 0.3998330550918196994991652754591;
 	
+	private boolean nextClickSetsStart = false;
+	private boolean nextClickSetsDest = false;
+	
+	private Node startingNode = null;
+	private Node destNode = null;
+	
 	public MapPanel(MainFrame parent, String displayImagePath, String nodesImagePath) {
 		this.parent = parent;
 		this.displayImagePath = displayImagePath;
@@ -463,6 +469,22 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         System.out.println("Translate X: " + translateX);
         System.out.println("Translate Y: " + translateY);		
 	}
+	
+	public void setNextClickStart(boolean newValue) {
+		this.nextClickSetsStart = newValue;
+		
+		if (newValue == true) {
+			nextClickSetsDest = false;
+		}
+	}
+	
+	public void setNextClickDest(boolean newValue) {
+		this.nextClickSetsDest = newValue;
+		
+		if (newValue == true) {
+			nextClickSetsStart = false;
+		}
+	}
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent eventArgs) {
@@ -503,6 +525,18 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			if (clickedNode.getValid()) {
 				System.out.println("Clicked VALID node at image coordinates (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")" + ". (Image clicked!)");
 				c = new Clicked(clicked, true);
+				
+				if (this.nextClickSetsStart) 
+				{
+					System.out.println("Starting node set to node at (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")");
+					this.startingNode = clickedNode;
+					this.nextClickSetsStart = false;
+				}
+				else if (this.nextClickSetsDest) {
+					System.out.println("Destination node set to node at (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")");
+					this.destNode = clickedNode;
+					this.nextClickSetsDest = false;					
+				}
 			}			
 			else {
 				System.out.println("Clicked INVALID node at image coordinates (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")" + ". (Image clicked!)");

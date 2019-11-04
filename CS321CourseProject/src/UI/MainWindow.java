@@ -24,6 +24,18 @@ import javax.swing.JSplitPane;
 import javax.swing.JViewport;
 import javax.swing.SwingConstants;
 import javax.swing.JScrollPane;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
+import javax.swing.BoxLayout;
+import java.awt.CardLayout;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.FlowLayout;
 
 public class MainWindow {
 
@@ -88,6 +100,7 @@ public class MainWindow {
 		
 		// We use a split pane to divide the UI into two separate sections: controls & map.
 		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapPanel);
+		
 		splitPane.setDividerLocation(dividerLocation);
 		splitPane.setResizeWeight(resizeWeight);
 		
@@ -112,6 +125,31 @@ public class MainWindow {
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 0;
 		frame.getContentPane().add(splitPane, gbc_splitPane);
+
+		JButton setStartingPointButton = new JButton("Set Starting Point");
+		setStartingPointButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.setNextClickStart(true);
+			}
+		});
+		
+		JButton btnSetDestination = new JButton("Set Destination");
+		btnSetDestination.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.setNextClickDest(true);
+			}
+		});		
+		controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		controlPanel.add(setStartingPointButton);
+		controlPanel.add(btnSetDestination);
+		
+		JButton btnCalculatePath = new JButton("Calculate Path");
+		btnCalculatePath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		controlPanel.add(btnCalculatePath);
 	}
 
 }
