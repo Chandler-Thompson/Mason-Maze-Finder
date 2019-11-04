@@ -1,6 +1,7 @@
 package Map;
 
 
+import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -106,6 +107,18 @@ public class Node implements Serializable {
     public void setLabel(String label)
     {
         this.label = label;
+    }
+    
+    public int getX() {
+    	return x;
+    }
+    
+    public int getY() {
+    	return y;
+    }
+    
+    public Point getPoint() {
+    	return new Point(x,y);
     }
 
 }

@@ -146,7 +146,7 @@ public class MainWindow {
 		JButton btnCalculatePath = new JButton("Calculate Path");
 		btnCalculatePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				mapImagePanel.generatePaths();
 			}
 		});
 		controlPanel.add(btnCalculatePath);
