@@ -8,3 +8,6 @@ This was inspired by the navigation difficulties imposed by the construction pro
 
 ## Authors:
 CS 321 - 005 Team #5 
+
+## Disclaimer:
+This project is in no way supported or acknowledged by George Mason University. It's just an assignment for CS 321. 
