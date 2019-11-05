@@ -51,6 +51,16 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	private final Image mapImage;
 	
 	/**
+	 * This value is used when displaying visual indicators for nodes.
+	 * 
+	 * It is used as with width and height.
+	 */
+	private final int nodeVisualIndicationWidth = 13;
+	
+	private final int maxNodeVisualWidth = 17;
+	private final int minNodeVisualWidth = 10;
+	
+	/**
 	 * This is the UI component in which this MapPanel is contained. 
 	 */
 	private MainFrame parent;
@@ -409,8 +419,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         }
         prevZoomAount = currentZoomAmount;
         
-        System.out.println("\ndrawImageX: " + (int)drawImageX);
-        System.out.println("drawImageY: " + (int)drawImageY);
+        //System.out.println("\ndrawImageX: " + (int)drawImageX);
+        //System.out.println("drawImageY: " + (int)drawImageY);
         
         // Update the current image bounds based on the transform. Useful for determining if used click image and where. 
         imageBounds = new Rectangle((int)drawImageX, (int)drawImageY, (int)(mapImage.getWidth(null) * currentZoomAmount), (int)(mapImage.getHeight(null) * currentZoomAmount));
@@ -418,19 +428,37 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         // Draw the image on the screen with transformation applied.
 	    g.drawImage(mapImage,  (int)drawImageX,  (int)drawImageY, (int)(mapImage.getWidth(null) * currentZoomAmount), (int)(mapImage.getHeight(null) * currentZoomAmount), null);
         
-	    int ovalWidth = (int)(100 * currentZoomAmount);
+	    int ovalWidth = (int)(this.nodeVisualIndicationWidth * (1 / currentZoomAmount));
+	    
+	    // Clamp the value of ovalWidth between the pre-defined constraints.
+	    if (ovalWidth > maxNodeVisualWidth)
+	    	ovalWidth = maxNodeVisualWidth;
+	    else if (ovalWidth < minNodeVisualWidth)
+	    	ovalWidth = minNodeVisualWidth;
+	    
+	    int ovalRadius = ovalWidth / 2;
         if (this.startingNode != null) {
-        	g.setColor(Color.GREEN);
+        	Color transparentGreen = new Color(10, 199, 41, 191); // Alpha of 191 so it is ~ 75% transparent...
+        	g.setColor(transparentGreen);
         	System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
-        	Point center = nodeToImageCoordinates(this.startingNode.getPoint());
+        	Point topLeft = nodeToImageCoordinates(this.startingNode.getPointFlipped());
+        	
+        	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
+        	// being where the user clicked).
+    		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius); 
         	System.out.println("Drawing oval for starting node at " + center.toString() + " with width " + ovalWidth);
         	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
         
         if (this.destNode != null) {
-        	g.setColor(Color.RED);
+        	Color transparentRed = new Color(199, 10, 10, 191); // Alpha of 191 so it is ~ 75% transparent...
+        	g.setColor(transparentRed);
         	System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
-        	Point center = nodeToImageCoordinates(this.destNode.getPoint());
+        	Point topLeft = nodeToImageCoordinates(this.destNode.getPointFlipped());
+        	
+        	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
+        	// being where the user clicked).
+    		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius);         	
         	System.out.println("Drawing oval for destination node at " + center.toString() + " with width " + ovalWidth);
         	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
@@ -542,19 +570,21 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	public Point nodeToImageCoordinates(Point p) {
 		double ratioX = imageBounds.getWidth() / mapImage.getWidth(null);
-		System.out.println("\nimageBounds.getWidth() / mapImage.getWidth(null) = " + imageBounds.getWidth() + "/" + mapImage.getWidth(null) + " = " + ratioX);
+		//System.out.println("\nimageBounds.getWidth() / mapImage.getWidth(null) = " + imageBounds.getWidth() + "/" + mapImage.getWidth(null) + " = " + ratioX);
 		double ratioY = imageBounds.getHeight() / mapImage.getHeight(null);
-		System.out.println("imageBounds.getHeight() / mapImage.getHeight(null) = " + imageBounds.getHeight() + "/" + mapImage.getHeight(null) + " = " + ratioY);
+		//System.out.println("imageBounds.getHeight() / mapImage.getHeight(null) = " + imageBounds.getHeight() + "/" + mapImage.getHeight(null) + " = " + ratioY);
 		
-		System.out.println("Node Point: " + p.toString());
-		System.out.println("ImageBounds: " + imageBounds.toString() + "\n");
+		//System.out.println("Node Point: " + p.toString());
+		//System.out.println("ImageBounds: " + imageBounds.toString() + "\n");
 		int x = (int)(p.x / scaleX);
-		System.out.println("p.x / scaleX = " + x);
+		//System.out.println("p.x / scaleX = " + x);
 		x = (int)(x * ratioX);
+		//System.out.println("x += this.drawImageX --> " + x + " += " + this.drawImageX + " --> " + ((int)(x + drawImageX)));
 		x += this.drawImageX;
 		int y = (int)(p.y / scaleY);
-		System.out.println("p.y / scaleY = " + y);
+		//System.out.println("p.y / scaleY = " + y);
 		y = (int)(y * ratioY);
+		//System.out.println("y += this.drawImageY --> " + y + " += " + this.drawImageY + " --> " + ((int)(y + drawImageY)));
 		y += this.drawImageY;
 		
 		return new Point(x,y);
@@ -595,7 +625,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		}
 		
 		System.out.println("eventArgs.getLocationOnScreen() = " + eventArgs.getLocationOnScreen());
-		repaint();
+		
+		repaint(); // Drag ended so repaint.
 		// System.out.println("Current Image Bounds: " + imageBounds);
 	}
 
@@ -625,7 +656,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	public void mouseReleased(MouseEvent eventArgs) {
 		updateOffsetsOnTranslate = true;	// That also means this should now be set to true.
 		
-		repaint(); // Drag ended so repaint.
+		repaint();
 	}
 	
 	class Clicked {
