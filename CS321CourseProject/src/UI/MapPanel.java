@@ -438,7 +438,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	    
 	    int ovalRadius = ovalWidth / 2;
         if (this.startingNode != null) {
-        	Color transparentGreen = new Color(10, 199, 41, 191); // Alpha of 191 so it is ~ 75% transparent...
+        	Color transparentGreen = new Color(10, 199, 41, 217); // Alpha of 191 so it is ~ 85% transparent...
         	g.setColor(transparentGreen);
         	System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.startingNode.getPointFlipped());
@@ -451,7 +451,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         }
         
         if (this.destNode != null) {
-        	Color transparentRed = new Color(199, 10, 10, 191); // Alpha of 191 so it is ~ 75% transparent...
+        	Color transparentRed = new Color(199, 10, 10, 217); // Alpha of 191 so it is ~ 85% transparent...
         	g.setColor(transparentRed);
         	System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.destNode.getPointFlipped());
