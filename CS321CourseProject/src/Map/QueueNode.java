@@ -13,6 +13,26 @@ public class QueueNode  {
 		this.prevNode = prevNode;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this)
+			return true;
+		if (obj instanceof QueueNode)
+		{
+			QueueNode other = (QueueNode)obj;
+			return this.node.equals(other.node);
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		if (node == null)
+			throw new IllegalStateException("node cannot be null...");
+		return this.node.hashCode();
+	}
+	
 	public Node getNode()
 	{
 		return this.node;

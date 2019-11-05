@@ -1,5 +1,6 @@
 package Pathfinding;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -9,7 +10,7 @@ import Map.QueueNode;
 public class ShortestPathAlgorithm  {
 	
 	/**
-	 * the path from starting to destination and a 2D array containg all nodes needed for the algorithm
+	 * the path from starting to destination and a 2D array containing all nodes needed for the algorithm
 	 */
 	private LinkedList<Node> path = null;
 	private Node[][] graph = null;
@@ -21,36 +22,43 @@ public class ShortestPathAlgorithm  {
 	{
 		this.path = path;
 		this.graph = graph;
-		this.ShortestPath();
+		//this.ShortestPath();
 	}
-	
-	public void ShortestPath()
+		
+	public int calculateShortestPath(HashMap<Node, Node> discovered)
 	{
+		if (discovered.size() > 0)
+			throw new IllegalArgumentException("discovered must be empty.");		
 		if(path.size() <= 1)
 		{
-			System.out.println("Two or more locations must be picked, please select another location and try again\n");
+			System.out.println("[ERROR] Two or more locations must be picked, please select another location and try again\n");
+			return -1;
 		}
-		int locationNum = 1;
+		//int locationNum = 1;
 		int distance = 0;
 		while(path.size() > 1 & distance != -1)
 		{
-			distance = BFS(this.graph);
+			distance = BFS(this.graph, discovered);
 			if(distance != -1)
 			{
-				System.out.printf("location #%d visited distance is %d nodes away\n",locationNum,distance);
-				locationNum++;
+				//System.out.printf("location #%d visited distance is %d nodes away\n",locationNum,distance);
+				//locationNum++;	
 			}
 			else
 			{
 				path.clear();
-				System.out.println("Invalid path detected please only valid areas. Select path again\n");
+				//System.out.println("Invalid path detected please only valid areas. Select path again\n");
 			}
 			
 		}
+		
+		return distance;
 	}
 	
-	public int BFS(Node [][] graph)
+	public int BFS(Node [][] graph, HashMap<Node, Node> discovered)
 	{
+		if (discovered.size() > 0)
+			throw new IllegalArgumentException("discovered must be empty.");
 		int ROW = graph.length;
 		int COL = graph[0].length;
 		boolean [][] visitedNodes = new boolean [graph.length][graph[0].length];//refactor to use constants
@@ -65,7 +73,7 @@ public class ShortestPathAlgorithm  {
 	  		return -1;//error handling
 	  	}
 	  	
-	  	Queue<QueueNode>queue = new LinkedList<QueueNode>();
+	  	Queue<QueueNode> queue = new LinkedList<QueueNode>();
 	  	QueueNode src = new QueueNode(source,0, null);
 	  	queue.add(src);
 	  	visitedNodes[source.getXcord()][source.getYcord()] = true;
@@ -90,6 +98,7 @@ public class ShortestPathAlgorithm  {
 					{
 						visitedNodes[adjRow][adjCol] = true;
 						QueueNode adjNode = new QueueNode(graph[adjRow][adjCol],currNode.getDistance()+1, currNode);
+						discovered.put(adjNode.getNode(), currNode.getNode());
 						queue.add(adjNode);//adds to the top of the queue so that it can find its next neighbors
 					}
 					

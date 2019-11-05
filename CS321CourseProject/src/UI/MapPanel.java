@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -39,6 +41,7 @@ import javax.swing.JPanel;
 
 import Map.EdgelessNode;
 import Map.Node;
+import Map.QueueNode;
 import Pathfinding.ShortestPathAlgorithm;
 
 public class MapPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener  {
@@ -59,8 +62,14 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	private final int nodeVisualIndicationWidth = 13;
 	
+	// These are for start and destination nodes.
 	private final int maxNodeVisualWidth = 17;
 	private final int minNodeVisualWidth = 10;
+	
+	// These are for intermediate path nodes.
+	private final int pathNodeVisualWidth = 11;
+	private final int maxPathNodeVisualWidth = 10;
+	private final int minPathNodeVisualWidth = 9;
 	
 	/**
 	 * This is the UI component in which this MapPanel is contained. 
@@ -156,6 +165,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 * Grid of nodes.
 	 */
 	private Node[][] nodes = null;
+	
 	/**
 	 * The LinkedList will contain the starting location which is processed first till destination
 	 * is reached
@@ -172,9 +182,9 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	private boolean serializationEnabled = false;
 	
 	/**
-	 * Used to draw circles at last-clicked nodes.
+	 * The shortest path between the start and the destination node is stored here once calculated.
 	 */
-	private LinkedList<Clicked> lastTenClicked = new LinkedList<Clicked>();
+	private ArrayList<Node> shortestPath = new ArrayList<Node>();
 	
 	private final String nodesSavePath = "src\\Res\\nodes.dat";
 	
@@ -447,27 +457,51 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         if (this.startingNode != null) {
         	Color transparentGreen = new Color(10, 199, 41, 217); // Alpha of 191 so it is ~ 85% transparent...
         	g.setColor(transparentGreen);
-        	System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
+        	//System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.startingNode.getPointFlipped());
         	
         	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
         	// being where the user clicked).
     		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius); 
-        	System.out.println("Drawing oval for starting node at " + center.toString() + " with width " + ovalWidth);
+        	//System.out.println("Drawing oval for starting node at " + center.toString() + " with width " + ovalWidth);
         	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
         
         if (this.destNode != null) {
         	Color transparentRed = new Color(199, 10, 10, 217); // Alpha of 191 so it is ~ 85% transparent...
         	g.setColor(transparentRed);
-        	System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
+        	//System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.destNode.getPointFlipped());
         	
         	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
         	// being where the user clicked).
     		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius);         	
-        	System.out.println("Drawing oval for destination node at " + center.toString() + " with width " + ovalWidth);
+        	//System.out.println("Drawing oval for destination node at " + center.toString() + " with width " + ovalWidth);
         	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
+        }
+        
+        if (shortestPath.size() > 0) {
+    	    int pathOvalWidth = (int)(this.pathNodeVisualWidth * (1 / currentZoomAmount));
+    	    
+    	    // Clamp the value of ovalWidth between the pre-defined constraints.
+    	    if (pathOvalWidth > maxPathNodeVisualWidth)
+    	    	pathOvalWidth = maxPathNodeVisualWidth;
+    	    else if (pathOvalWidth < minPathNodeVisualWidth)
+    	    	pathOvalWidth = minPathNodeVisualWidth;
+    	    
+    	    int pathOvalRadius = pathOvalWidth / 2;        
+            
+        	Color transparentBlue = new Color(66, 170, 245, 191); // Alpha of 191 so it is ~ 75% transparent...
+        	g.setColor(transparentBlue);        
+        	
+        	// Iterate over all of the nodes in the shortest path and display them.
+        	for (int i = 0; i < shortestPath.size(); i++) {
+        		Node cur = shortestPath.get(i);
+        		Point topLeft = nodeToImageCoordinates(cur.getPointFlipped());
+        		
+        		Point center = new Point(topLeft.x - pathOvalRadius, topLeft.y - pathOvalRadius); 
+        		g.fillOval((int)(center.x), (int)(center.y), pathOvalWidth, pathOvalWidth);
+        	}        	
         }
 	}
 	
@@ -517,16 +551,44 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	public void clearSelectedNodes() {
 		this.startingNode = null;
 		this.destNode = null;
+		shortestPath.clear();
 		
 		repaint();
 	}
 	public void generatePaths() {
-		if (this.startingNode == null) 
-			JOptionPane.showMessageDialog(null, "Please specify a starting node.", "Error", JOptionPane.INFORMATION_MESSAGE);
-		if (this.destNode == null)
-			JOptionPane.showMessageDialog(null, "Please specify a destination node.", "Error", JOptionPane.INFORMATION_MESSAGE);
+		if (this.startingNode == null && this.destNode == null) 
+			JOptionPane.showMessageDialog(null, "Please specify both a starting node and a destination node first.", "Error", JOptionPane.WARNING_MESSAGE);
+		else if (this.startingNode == null) 
+			JOptionPane.showMessageDialog(null, "Please specify a starting node.", "Error", JOptionPane.WARNING_MESSAGE);
+		else if (this.destNode == null)
+			JOptionPane.showMessageDialog(null, "Please specify a destination node.", "Error", JOptionPane.WARNING_MESSAGE);
 		
+		LinkedList<Node> path = new LinkedList<Node>();
+		path.add(startingNode);
+		path.add(destNode);
+		ShortestPathAlgorithm spa = new ShortestPathAlgorithm(path, nodes);
+		HashMap<Node, Node> discovered = new HashMap<Node, Node>();
+		int result = spa.calculateShortestPath(discovered);
 		
+		if (result == -1) {
+			JOptionPane.showMessageDialog(null, "ERROR - No path could be generated. The two points are not connected...", "Error", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		System.out.println("The distance between the two nodes is " + result + " nodes.");
+		
+		LinkedList<Node> actualPath = new LinkedList<Node>();
+		Node n = destNode;
+		actualPath.add(n);
+		while (!startingNode.equals(n)) {
+			n = discovered.get(n);
+			actualPath.add(n);
+		}
+		// Remove the first and last elements, which will be the destination and the start, respectively.
+		actualPath.removeFirst();
+		actualPath.removeLast();
+		
+		this.shortestPath.addAll(actualPath);
+		repaint();
 	}
 	
 	@Override
@@ -676,7 +738,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	class Clicked {
 		Point location;
 		boolean valid;
-		
+
 		public Clicked(Point p, boolean b) {
 			this.location = p;
 			this.valid = b;
