@@ -151,3 +151,6 @@ CS321CourseProject/.classpath
 .metadata/.mylyn/tasks.xml.zip
 .metadata/.mylyn/.tasks.xml.zip
 .metadata/.log
+.metadata/.plugins/org.eclipse.jdt.core/savedIndexNames.txt
+.metadata/.log
+.metadata/.plugins/org.eclipse.jdt.core/2888467069.index
