@@ -44,6 +44,7 @@ import Map.Node;
 import Map.QueueNode;
 import Pathfinding.ShortestPathAlgorithm;
 
+// https://crab.rutgers.edu/~guyk/BFS.pdf
 public class MapPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener  {
 
 	// NOTE: The default values are what positions the image in the middle of the window when first starting the application.
@@ -468,12 +469,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	    int pathIncrement = 1;
 	    
 	    if (amountZoomedAsPercent <= 0.25)
-	    	pathIncrement = 4;
+	    	pathIncrement = 5;
 	    if (amountZoomedAsPercent > 0.25 && amountZoomedAsPercent <= 0.5) 
+	    	pathIncrement = 4;
+	    if (amountZoomedAsPercent > 0.5 && amountZoomedAsPercent <= 0.9) 
 	    	pathIncrement = 3;
-	    if (amountZoomedAsPercent > 0.5 && amountZoomedAsPercent <= 0.75) 
-	    	pathIncrement = 2;
-	    if (amountZoomedAsPercent > 0.75)
+	    if (amountZoomedAsPercent > 0.9)
 	    	pathIncrement = 1;
 	    
 	    int startDestTransparency = 255 - (int)(this.maxAlphaDecreaseForStartAndDest * amountZoomedAsPercent);
