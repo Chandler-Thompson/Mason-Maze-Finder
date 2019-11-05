@@ -139,9 +139,6 @@ public class MainWindow {
 				mapImagePanel.setNextClickDest(true);
 			}
 		});		
-		controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		controlPanel.add(setStartingPointButton);
-		controlPanel.add(btnSetDestination);
 		
 		JButton btnCalculatePath = new JButton("Calculate Path");
 		btnCalculatePath.addActionListener(new ActionListener() {
@@ -149,7 +146,20 @@ public class MainWindow {
 				mapImagePanel.generatePaths();
 			}
 		});
+		
+		JButton btnClearSetNodes = new JButton("Clear Selected");
+		btnClearSetNodes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.clearSelectedNodes();
+			}
+		});
+		
+		controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		controlPanel.add(setStartingPointButton);
+		controlPanel.add(btnSetDestination);
 		controlPanel.add(btnCalculatePath);
+		controlPanel.add(btnClearSetNodes);
+
 	}
 
 }
