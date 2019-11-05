@@ -28,6 +28,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.imageio.ImageIO;
 
@@ -37,6 +38,7 @@ import javax.swing.JPanel;
 
 import Map.EdgelessNode;
 import Map.Node;
+import Pathfinding.ShortestPathAlgorithm;
 
 public class MapPanel extends JPanel implements MouseWheelListener, MouseListener, MouseMotionListener  {
 
@@ -139,6 +141,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 * Grid of nodes.
 	 */
 	private Node[][] nodes = null;
+	private Node[][] graph = null;
+	/**
+	 * The LinkedList will contain the starting location which is processed first till destination
+	 * is reached
+	 */
+	private LinkedList<Node> path = new LinkedList<Node>();
 	
 	private EdgelessNode[][] edgelessNodes = null;
 	
@@ -448,13 +456,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         System.out.println("Translate Y: " + translateY);		
 	}
 
-	@Override
 	public void mouseWheelMoved(MouseWheelEvent eventArgs) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mouseDragged(MouseEvent eventArgs) {
 		// Get the current point and determine how much the user has moved since clicking.
 		Point currentPoint = eventArgs.getLocationOnScreen();
@@ -466,13 +472,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		repaint();
 	}
 
-	@Override
 	public void mouseMoved(MouseEvent eventArgs) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mouseClicked(MouseEvent eventArgs) {
 		Point clicked = eventArgs.getPoint();
 		Clicked c = null;
@@ -484,7 +488,14 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			Point adjustedForImage = new Point((int)(ratioX * (clicked.getX() - imageBounds.getX())), 
 											   (int)(ratioY * (clicked.getY() - imageBounds.getY())));
 			Node clickedNode = nodes[adjustedForImage.y][adjustedForImage.x];
+			
+			if(path.size() > 2)
+			{
+				ShortestPathAlgorithm test = new ShortestPathAlgorithm(path, this.getGraph());
+				//test.updateNeighborsWeight();
+			}
 			if (clickedNode.getValid()) {
+				path.add(clickedNode);
 				System.out.println("Clicked VALID node at image coordinates (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")" + ". (Image clicked!)");
 				c = new Clicked(clicked, true);
 			}			
@@ -506,19 +517,16 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		// System.out.println("Current Image Bounds: " + imageBounds);
 	}
 
-	@Override
 	public void mouseEntered(MouseEvent eventArgs) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mouseExited(MouseEvent eventArgs) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mousePressed(MouseEvent eventArgs) {
 		// Pressed just means the button was pressed down, not necessarily released.
 		// Clicked means the user pressed and released the button.
@@ -528,11 +536,19 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		mouseDragStart = MouseInfo.getPointerInfo().getLocation();
 	}
 
-	@Override
 	public void mouseReleased(MouseEvent eventArgs) {
 		updateOffsetsOnTranslate = true;	// That also means this should now be set to true.
 		
 		repaint(); // Drag ended so repaint.
+	}
+	public Node[][] getGraph()
+	{
+		return this.nodes;
+		
+	}
+	public LinkedList<Node> getPath()
+	{
+		return this.path;
 	}
 	
 	class Clicked {
