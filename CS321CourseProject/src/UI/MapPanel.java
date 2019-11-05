@@ -141,7 +141,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 * Grid of nodes.
 	 */
 	private Node[][] nodes = null;
-	private Node[][] graph = null;
 	/**
 	 * The LinkedList will contain the starting location which is processed first till destination
 	 * is reached
@@ -488,12 +487,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			Point adjustedForImage = new Point((int)(ratioX * (clicked.getX() - imageBounds.getX())), 
 											   (int)(ratioY * (clicked.getY() - imageBounds.getY())));
 			Node clickedNode = nodes[adjustedForImage.y][adjustedForImage.x];
-			
-			if(path.size() > 2)
-			{
-				ShortestPathAlgorithm test = new ShortestPathAlgorithm(path, this.getGraph());
-				//test.updateNeighborsWeight();
-			}
 			if (clickedNode.getValid()) {
 				path.add(clickedNode);
 				System.out.println("Clicked VALID node at image coordinates (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")" + ". (Image clicked!)");
