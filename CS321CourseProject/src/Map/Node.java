@@ -107,5 +107,16 @@ public class Node implements Serializable {
     {
         this.label = label;
     }
+    
+    public int getXcord()
+    {
+    	return x;
+    }
+    
+    public int getYcord()
+    {
+    	return y;
+    }
+    
 
 }

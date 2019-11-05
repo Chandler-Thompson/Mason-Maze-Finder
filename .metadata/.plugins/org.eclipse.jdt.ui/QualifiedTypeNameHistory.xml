@@ -26,4 +26,9 @@
     <fullyQualifiedTypeName name="java.awt.event.MouseMotionListener"/>
     <fullyQualifiedTypeName name="edu.uci.ics.jung.graph.Graph"/>
     <fullyQualifiedTypeName name="edu.uci.ics.jung.graph.DirectedGraph"/>
+    <fullyQualifiedTypeName name="java.util.ArrayList"/>
+    <fullyQualifiedTypeName name="Map.Node"/>
+    <fullyQualifiedTypeName name="UI.MapPanel"/>
+    <fullyQualifiedTypeName name="java.util.Queue"/>
+    <fullyQualifiedTypeName name="java.util.LinkedList"/>
 </qualifiedTypeNameHistroy>

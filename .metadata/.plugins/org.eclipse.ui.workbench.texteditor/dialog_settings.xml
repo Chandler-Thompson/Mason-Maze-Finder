@@ -2,12 +2,16 @@
 <section name="Workbench">
 	<section name="org.eclipse.ui.texteditor.FindReplaceDialog">
 		<item value="false" key="isRegEx"/>
-		<item value="addEdge" key="selection"/>
+		<item value="mouseClicked" key="selection"/>
 		<item value="false" key="casesensitive"/>
 		<item value="false" key="incremental"/>
 		<item value="true" key="wrap"/>
-		<item value="false" key="wholeword"/>
+		<item value="true" key="wholeword"/>
 		<list key="findhistory">
+			<item value="mouseClicked"/>
+			<item value="mouse"/>
+			<item value="geNodes"/>
+			<item value="nodes"/>
 			<item value="addEdge"/>
 			<item value="getEdges"/>
 			<item value="zooming"/>
