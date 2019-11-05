@@ -63,13 +63,13 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	private final int nodeVisualIndicationWidth = 13;
 	
 	// These are for start and destination nodes.
-	private final int maxNodeVisualWidth = 17;
-	private final int minNodeVisualWidth = 10;
+	private final int maxNodeVisualWidth = 20;
+	private final int minNodeVisualWidth = 12;
 	
 	// These are for intermediate path nodes.
-	private final int pathNodeVisualWidth = 11;
-	private final int maxPathNodeVisualWidth = 10;
-	private final int minPathNodeVisualWidth = 9;
+	private final int pathNodeVisualWidth = 7;
+	private final int maxPathNodeVisualWidth = 8;
+	private final int minPathNodeVisualWidth = 7;
 	
 	/**
 	 * This is the UI component in which this MapPanel is contained. 
@@ -180,6 +180,22 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	public int numberOfValidNodes = 0;
 	
 	private boolean serializationEnabled = false;
+	
+	/**
+	 * This variable indicates the maximum amount we can decrease the alpha (i.e., transparency) of
+	 * starting and destination nodes. We vary the transparency based on zoom. If we're zoomed out more,
+	 * then the node will be displayed as more transparent. If we zoom in more, the node gets smaller and thus
+	 * it doesn't need to be transparent, as it will be covering up less of the underlying image.
+	 */
+	private final int maxAlphaDecreaseForStartAndDest = 38; // 38 means we could set the alpha to 216.75 at the least, which is only 15% transparent.
+	
+	/**
+	 * This variable indicates the maximum amount we can decrease the alpha (i.e., transparency) of
+	 * nodes displayed within a path. We vary the transparency based on zoom. If we're zoomed out more,
+	 * then the node will be displayed as more transparent. If we zoom in more, the node gets smaller and thus
+	 * it doesn't need to be transparent, as it will be covering up less of the underlying image.
+	 */	
+	private final int maxAlphaDecreaseForPathNodes = 64; // 64 means we can set alpha to 191 at the least, which is 25% transparent.
 	
 	/**
 	 * The shortest path between the start and the destination node is stored here once calculated.
@@ -447,6 +463,22 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         
 	    int ovalWidth = (int)(this.nodeVisualIndicationWidth * (1 / currentZoomAmount));
 	    
+	    double amountZoomedAsPercent = this.currentZoomAmount / this.maxZoomIn;
+	    System.out.println("amountZoomedAsPercent = " + amountZoomedAsPercent);
+	    int pathIncrement = 1;
+	    
+	    if (amountZoomedAsPercent <= 0.25)
+	    	pathIncrement = 4;
+	    if (amountZoomedAsPercent > 0.25 && amountZoomedAsPercent <= 0.5) 
+	    	pathIncrement = 3;
+	    if (amountZoomedAsPercent > 0.5 && amountZoomedAsPercent <= 0.75) 
+	    	pathIncrement = 2;
+	    if (amountZoomedAsPercent > 0.75)
+	    	pathIncrement = 1;
+	    
+	    int startDestTransparency = 255 - (int)(this.maxAlphaDecreaseForStartAndDest * amountZoomedAsPercent);
+	    int pathTransparency = 255 - (int)(this.maxAlphaDecreaseForPathNodes * amountZoomedAsPercent);
+	    
 	    // Clamp the value of ovalWidth between the pre-defined constraints.
 	    if (ovalWidth > maxNodeVisualWidth)
 	    	ovalWidth = maxNodeVisualWidth;
@@ -455,7 +487,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	    
 	    int ovalRadius = ovalWidth / 2;
         if (this.startingNode != null) {
-        	Color transparentGreen = new Color(10, 199, 41, 217); // Alpha of 191 so it is ~ 85% transparent...
+        	Color transparentGreen = new Color(10, 199, 41, startDestTransparency); 
         	g.setColor(transparentGreen);
         	//System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.startingNode.getPointFlipped());
@@ -468,7 +500,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         }
         
         if (this.destNode != null) {
-        	Color transparentRed = new Color(199, 10, 10, 217); // Alpha of 191 so it is ~ 85% transparent...
+        	Color transparentRed = new Color(199, 10, 10, startDestTransparency); 
         	g.setColor(transparentRed);
         	//System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.destNode.getPointFlipped());
@@ -482,7 +514,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         
         if (shortestPath.size() > 0) {
     	    int pathOvalWidth = (int)(this.pathNodeVisualWidth * (1 / currentZoomAmount));
-    	    
     	    // Clamp the value of ovalWidth between the pre-defined constraints.
     	    if (pathOvalWidth > maxPathNodeVisualWidth)
     	    	pathOvalWidth = maxPathNodeVisualWidth;
@@ -491,11 +522,14 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
     	    
     	    int pathOvalRadius = pathOvalWidth / 2;        
             
-        	Color transparentBlue = new Color(66, 170, 245, 191); // Alpha of 191 so it is ~ 75% transparent...
+        	Color transparentBlue = new Color(66, 87, 245, pathTransparency);
         	g.setColor(transparentBlue);        
         	
         	// Iterate over all of the nodes in the shortest path and display them.
-        	for (int i = 0; i < shortestPath.size(); i++) {
+        	// We increment i by a value dependent on how zoomed-in we are. If we're
+        	// very zoomed-in, then we'd like to display more of the nodes in the path.
+        	// If we're zoomed out, it isn't so important to display each and every node.
+        	for (int i = 0; i < shortestPath.size(); i += pathIncrement) {
         		Node cur = shortestPath.get(i);
         		Point topLeft = nodeToImageCoordinates(cur.getPointFlipped());
         		
@@ -586,7 +620,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		// Remove the first and last elements, which will be the destination and the start, respectively.
 		actualPath.removeFirst();
 		actualPath.removeLast();
-		
+		this.shortestPath.clear();
 		this.shortestPath.addAll(actualPath);
 		repaint();
 	}
@@ -678,11 +712,13 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 				{
 					System.out.println("Starting node set to node at (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")");
 					this.startingNode = clickedNode;
+					this.shortestPath.clear();
 					this.nextClickSetsStart = false;
 				}
 				else if (this.nextClickSetsDest) {
 					System.out.println("Destination node set to node at (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")");
 					this.destNode = clickedNode;
+					this.shortestPath.clear();
 					this.nextClickSetsDest = false;					
 				}
 			}			
