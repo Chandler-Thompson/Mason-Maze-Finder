@@ -121,4 +121,8 @@ public class Node implements Serializable {
     	return new Point(x,y);
     }
 
+    public Point getPointFlipped() {
+    	return new Point(y,x);
+    }    
+    
 }
