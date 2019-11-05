@@ -12,8 +12,6 @@
 	</list>
 	<section name="CallHierarchySearchScope">
 	</section>
-	<section name="org.eclipse.ltk.ui.refactoring.settings">
-	</section>
 	<section name="SearchInDialog">
 		<item value="true" key="SearchInProjects"/>
 		<item value="true" key="SearchInAppLibs"/>
@@ -30,8 +28,6 @@
 	<section name="NewClassWizardPage">
 		<item value="false" key="create_constructor"/>
 		<item value="true" key="create_unimplemented"/>
-	</section>
-	<section name="RenameInformationPopup">
 	</section>
 	<section name="OptionalMessageDialog.hide.">
 		<item value="true" key="org.eclipse.jdt.ui.typecomment.deprecated"/>
