@@ -43,6 +43,33 @@ public class Node implements Serializable {
         this.bottomNode = bottom;
     }
     
+    @Override
+    public boolean equals(Object obj) {
+    	if (this == obj)
+    		return true;
+    	if (obj instanceof Node) {
+    		Node other = (Node)obj;
+    		return this.x == other.x && this.y == other.y;
+    	}
+    	
+    	return false;
+    }
+    
+    /**
+     * Hash code using the Cantor pairing function.
+     * 
+     * f(x,y) = 1 + [( [x + y] * [x + y + 1] ) / 2] 
+     */
+    @Override
+    public int hashCode() {
+    	// https://stackoverflow.com/questions/919612/mapping-two-integers-to-one-in-a-unique-and-deterministic-way
+    	return (((x + y) * (x + y + 1)) / 2) + 1;	
+    	/*int result = 17;
+    	result = result * 31 + Integer.hashCode(x);
+    	result = result * 31 + Integer.hashCode(y);
+    	return result;*/
+    }
+    
     public boolean getValid() {
     	return valid;
     }
