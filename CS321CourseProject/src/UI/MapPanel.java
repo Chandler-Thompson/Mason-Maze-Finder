@@ -409,25 +409,30 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         }
         prevZoomAount = currentZoomAmount;
         
+        System.out.println("\ndrawImageX: " + (int)drawImageX);
+        System.out.println("drawImageY: " + (int)drawImageY);
+        
         // Update the current image bounds based on the transform. Useful for determining if used click image and where. 
         imageBounds = new Rectangle((int)drawImageX, (int)drawImageY, (int)(mapImage.getWidth(null) * currentZoomAmount), (int)(mapImage.getHeight(null) * currentZoomAmount));
         
         // Draw the image on the screen with transformation applied.
 	    g.drawImage(mapImage,  (int)drawImageX,  (int)drawImageY, (int)(mapImage.getWidth(null) * currentZoomAmount), (int)(mapImage.getHeight(null) * currentZoomAmount), null);
         
-	    int ovalWidth = (int)(50 * currentZoomAmount);
+	    int ovalWidth = (int)(100 * currentZoomAmount);
         if (this.startingNode != null) {
         	g.setColor(Color.GREEN);
+        	System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
         	Point center = nodeToImageCoordinates(this.startingNode.getPoint());
         	System.out.println("Drawing oval for starting node at " + center.toString() + " with width " + ovalWidth);
-        	g.fillOval((int)(center.x + drawImageX), (int)(center.y + drawImageY), ovalWidth, ovalWidth);
+        	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
         
         if (this.destNode != null) {
         	g.setColor(Color.RED);
+        	System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
         	Point center = nodeToImageCoordinates(this.destNode.getPoint());
         	System.out.println("Drawing oval for destination node at " + center.toString() + " with width " + ovalWidth);
-        	g.fillOval((int)(center.x + drawImageX), (int)(center.y + drawImageY), ovalWidth, ovalWidth);
+        	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
 	}
 	
@@ -473,6 +478,13 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			nextClickSetsStart = false;
 		}
 	}
+	
+	public void clearSelectedNodes() {
+		this.startingNode = null;
+		this.destNode = null;
+		
+		repaint();
+	}
 
 	public void generatePaths() {
 		if (this.startingNode == null) 
@@ -513,7 +525,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 * @return point whose position on the screen is the same as the given point but whose coordinates are 
 	 * 		   relative to the Nodes[][] nodes object.
 	 */
-	public Point imageToNodeCoordinates(Point p) {
+	public Point panelToNodeCoordinates(Point p) {
 		double ratioX = mapImage.getWidth(null) / imageBounds.getWidth();
 		ratioX *= scaleX;
 		double ratioY = mapImage.getHeight(null) / imageBounds.getHeight();
@@ -529,15 +541,23 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 * @return
 	 */
 	public Point nodeToImageCoordinates(Point p) {
-		double ratioX = mapImage.getWidth(null) / imageBounds.getWidth();
-		ratioX *= scaleX;
-		double ratioY = mapImage.getHeight(null) / imageBounds.getHeight();
-		ratioY *= scaleY;
+		double ratioX = imageBounds.getWidth() / mapImage.getWidth(null);
+		System.out.println("\nimageBounds.getWidth() / mapImage.getWidth(null) = " + imageBounds.getWidth() + "/" + mapImage.getWidth(null) + " = " + ratioX);
+		double ratioY = imageBounds.getHeight() / mapImage.getHeight(null);
+		System.out.println("imageBounds.getHeight() / mapImage.getHeight(null) = " + imageBounds.getHeight() + "/" + mapImage.getHeight(null) + " = " + ratioY);
 		
-		Point adjusted = new Point((int) ((p.getX() / ratioX) - imageBounds.getX()),
-								   (int) ((p.getY() / ratioY) - imageBounds.getY()));
+		System.out.println("Node Point: " + p.toString());
+		System.out.println("ImageBounds: " + imageBounds.toString() + "\n");
+		int x = (int)(p.x / scaleX);
+		System.out.println("p.x / scaleX = " + x);
+		x = (int)(x * ratioX);
+		x += this.drawImageX;
+		int y = (int)(p.y / scaleY);
+		System.out.println("p.y / scaleY = " + y);
+		y = (int)(y * ratioY);
+		y += this.drawImageY;
 		
-		return adjusted;
+		return new Point(x,y);
 	}
 
 	@Override
@@ -547,7 +567,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		if (imageBounds.contains(clicked)) {
 			
 			
-			Point adjusted = imageToNodeCoordinates(clicked);
+			Point adjusted = panelToNodeCoordinates(clicked);
 			Node clickedNode = nodes[adjusted.y][adjusted.x];
 			if (clickedNode.getValid()) {
 				System.out.println("Clicked VALID node at node coordinates (" + adjusted.getX() + "," + adjusted.getY() + ")" + ". (Image clicked!)");
@@ -569,18 +589,13 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 				System.out.println("Clicked INVALID node at node coordinates (" + adjusted.getX() + "," + adjusted.getY() + ")" + ". (Image clicked!)");
 				c = new Clicked(clicked, false);
 			}
-			System.out.println("Screen coordinates = (" + clicked.getX() + "," + clicked.getY() + ")");
+			System.out.println("Panel coordinates = (" + clicked.getX() + "," + clicked.getY() + ")");
 		} else {
 			System.out.println("Click at " + clicked + ". (Image NOT clicked!)");
 		}
 		
-		if (c != null) {
-			lastTenClicked.add(c);
-			
-			if (lastTenClicked.size() > 10) 
-				lastTenClicked.removeFirst();
-		}
 		System.out.println("eventArgs.getLocationOnScreen() = " + eventArgs.getLocationOnScreen());
+		repaint();
 		// System.out.println("Current Image Bounds: " + imageBounds);
 	}
 
