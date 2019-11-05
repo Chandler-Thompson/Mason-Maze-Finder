@@ -15,21 +15,18 @@ public class MainFrame extends JFrame implements KeyListener {
 		setFocusTraversalKeysEnabled(false);
 	}
 	
-	@Override
 	public void keyPressed(KeyEvent eventArgs) {
 		if (eventArgs.getKeyCode() == KeyEvent.VK_CONTROL)
 			controlPressed = true;
 		
 	}
 
-	@Override
 	public void keyReleased(KeyEvent eventArgs) {
 		if (eventArgs.getKeyCode() == KeyEvent.VK_CONTROL)
 			controlPressed = false;
 		
 	}
 
-	@Override
 	public void keyTyped(KeyEvent eventArgs) {
 		// TODO Auto-generated method stub
 	}	

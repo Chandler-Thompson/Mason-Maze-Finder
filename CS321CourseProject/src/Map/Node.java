@@ -120,7 +120,15 @@ public class Node implements Serializable {
     public Point getPoint() {
     	return new Point(x,y);
     }
-
+    public int getXcord()
+    {
+    	return x;
+    }
+    
+    public int getYcord()
+    {
+    	return y;
+    }
     public Point getPointFlipped() {
     	return new Point(y,x);
     }    
