@@ -67,7 +67,7 @@ public class ShortestPathAlgorithm  {
 		int [] colNum = {0,-1,1,0};
 	  	Node source = path.poll();
 	  	Node dest = path.element();
-	  	if(graph[source.getXcord()][source.getYcord()].isValid() == false || graph[dest.getXcord()][dest.getYcord()].isValid() == false)
+	  	if(graph[source.getX()][source.getY()].isValid() == false || graph[dest.getX()][dest.getY()].isValid() == false)
 	  	{
 	  		path.add(0, source);
 	  		return -1;//error handling
@@ -76,14 +76,14 @@ public class ShortestPathAlgorithm  {
 	  	Queue<QueueNode> queue = new LinkedList<QueueNode>();
 	  	QueueNode src = new QueueNode(source,0, null);
 	  	queue.add(src);
-	  	visitedNodes[source.getXcord()][source.getYcord()] = true;
+	  	visitedNodes[source.getX()][source.getY()] = true;
 	  	int currX, currY = 0;
 		while(queue.isEmpty() == false)//beginning of BFS
 		{
 			QueueNode currNode = queue.poll();
-			currX = currNode.getNode().getXcord();
-			currY = currNode.getNode().getYcord();
-			if(currX == dest.getXcord() && currY == dest.getYcord())//we have reached the destination
+			currX = currNode.getNode().getX();
+			currY = currNode.getNode().getY();
+			if(currX == dest.getX() && currY == dest.getY())//we have reached the destination
 			{
 				return currNode.getDistance();
 			}

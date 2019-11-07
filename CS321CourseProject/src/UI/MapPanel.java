@@ -3,22 +3,17 @@ package UI;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferUShort;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,23 +21,18 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Queue;
 
 import javax.imageio.ImageIO;
-
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import Map.EdgelessNode;
 import Map.Node;
-import Map.QueueNode;
 import Pathfinding.ShortestPathAlgorithm;
 
 // https://crab.rutgers.edu/~guyk/BFS.pdf
@@ -247,6 +237,15 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		this.displayImagePath = displayImagePath;
 		this.nodesImagePath = nodesImagePath;
 		this.mapImage = new ImageIcon(displayImagePath).getImage();
+		
+		//TODO: Remove/Replace if UI supports multiple saved paths
+		try {
+			this.shortestPath = parent.getProfile().getSavedPaths().get(0);
+			System.out.println("Using previous saved path.");
+		}catch(IndexOutOfBoundsException e) {
+			System.out.println("No previous saved paths found...");
+		}
+		
 		
 		addMouseWheelListener(this);
 		addMouseListener(this);
@@ -611,30 +610,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         System.out.println("Translate Y: " + translateY);		
 	}
 	
-	public void setNextClickStart(boolean newValue) {
-		this.nextClickSetsStart = newValue;
-		
-		if (newValue == true) {
-			nextClickSetsDest = false;
-		}
-	}
-	
-	public void setNextClickDest(boolean newValue) {
-		this.nextClickSetsDest = newValue;
-		
-		if (newValue == true) {
-			nextClickSetsStart = false;
-		}
-	}
-	
-	public void clearPathNodes() {
-		this.startingNode = null;
-		this.destNode = null;
-		shortestPath.clear();
-		
-		repaint();
-	}
-	
 	public void generatePaths() {
 		
 		if (this.startingNode == null && this.destNode == null) 
@@ -874,6 +849,54 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		}
 		
 		repaint();
+		
+	}
+	
+	public void setNextClickStart(boolean newValue) {
+		this.nextClickSetsStart = newValue;
+		
+		if (newValue == true) {
+			nextClickSetsDest = false;
+		}
+	}
+	
+	public void setNextClickDest(boolean newValue) {
+		this.nextClickSetsDest = newValue;
+		
+		if (newValue == true) {
+			nextClickSetsStart = false;
+		}
+	}
+	
+	public void takeScreenshot() {//https://coderanch.com/t/470601/java/screenshot-JPanel
+		BufferedImage bufImage = new BufferedImage(this.getSize().width, this.getSize().height,BufferedImage.TYPE_INT_RGB);
+		this.paint(bufImage.createGraphics());
+		File imageFile = new File("."+File.separator+"src\\Res\\snapshot.jpeg");
+	    try{
+	        imageFile.createNewFile();
+	        ImageIO.write(bufImage, "jpeg", imageFile);
+	        System.out.println("Took a Screenshot!");
+	    }catch(Exception ex){
+	    	ex.printStackTrace();
+	    }
+	}
+	
+	public void clearPathNodes() {
+		this.startingNode = null;
+		this.destNode = null;
+		shortestPath.clear();
+		
+		//TODO: remove this when no longer needed
+		parent.getProfile().getSavedPaths().remove(0);
+		parent.getProfile().saveProfile();
+		
+		repaint();
+	}
+	
+	public void savePath() {
+		
+		parent.getProfile().savePath(shortestPath);
+		parent.getProfile().saveProfile();
 		
 	}
 	

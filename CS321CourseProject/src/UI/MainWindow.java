@@ -1,41 +1,25 @@
 package UI;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.GridLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.MouseWheelEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.awt.Color;
-import java.awt.Dimension;
-
 import javax.swing.JSplitPane;
-import javax.swing.JViewport;
 import javax.swing.SwingConstants;
-import javax.swing.JScrollPane;
-import javax.swing.JButton;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.BorderLayout;
-import javax.swing.BoxLayout;
-import java.awt.CardLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
-import java.awt.FlowLayout;
+
+import User.Profile;
 
 public class MainWindow {
 
@@ -83,7 +67,8 @@ public class MainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new MainFrame();
+		//TODO: Remove "TestUser" and replace with actual login
+		frame = new MainFrame("TestUser");
 		frame.setSize(width, height);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -154,10 +139,24 @@ public class MainWindow {
 			}
 		});
 		
+		JButton btnSavePath = new JButton("Save Path");
+		btnSavePath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.savePath();
+			}
+		});
+		
 		JButton btnClearSelectedNodes = new JButton("Clear Selection");
 		btnClearSelectedNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.clearSelection();
+			}
+		});
+		
+		JButton btnTakeScreenshot = new JButton("Take Screenshot");
+		btnTakeScreenshot.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.takeScreenshot();
 			}
 		});
 		
@@ -166,7 +165,9 @@ public class MainWindow {
 		controlPanel.add(btnSetDestination);
 		controlPanel.add(btnCalculatePath);
 		controlPanel.add(btnClearSetNodes);
+		controlPanel.add(btnSavePath);
 		controlPanel.add(btnClearSelectedNodes);
+		controlPanel.add(btnTakeScreenshot);
 
 	}
 
