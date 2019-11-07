@@ -1,8 +1,10 @@
 package UI;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
-import Map.ClickableNode;
+import Map.Node;
+import Map.Terrain;
 
 /***
  * 
@@ -15,13 +17,35 @@ import Map.ClickableNode;
  */
 public class Selection {
 
-	ArrayList<ClickableNode> nodes;
+	Set<Node> nodes;
 	
-	public Selection(ArrayList<ClickableNode> nodes) {
+	public Selection() {
+		nodes = new HashSet<>();
+	}
+	
+	public Selection(Set<Node> nodes) {
 		this.nodes = nodes;
 	}
 	
-	public ArrayList<ClickableNode> getNodes(){
+	public void addNode(Node node) {
+		nodes.add(node);
+	}
+	
+	public void setNodesTerrain(Terrain terrain) {
+		for(Node node : nodes) {
+			node.setTerrain(terrain);
+		}
+	}
+	
+	public void clear() {
+		nodes.clear();
+	}
+	
+	public boolean isEmpty() {
+		return nodes.isEmpty();
+	}
+	
+	public Set<Node> getNodes(){
 		return nodes;
 	}
 	

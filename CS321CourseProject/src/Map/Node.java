@@ -6,10 +6,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-enum Terrain{
-	WALKABLE, BLOCKED
-}
-
 public class Node implements Serializable {
     private Node topNode;
     private Node leftNode;
@@ -70,7 +66,7 @@ public class Node implements Serializable {
     	return result;*/
     }
     
-    public boolean getValid() {
+    public boolean isValid() {
     	return valid;
     }
 
