@@ -67,7 +67,7 @@ public class ShortestPathAlgorithm  {
 		int [] colNum = {0,-1,1,0};
 	  	Node source = path.poll();
 	  	Node dest = path.element();
-	  	if(graph[source.getX()][source.getY()].isValid() == false || graph[dest.getX()][dest.getY()].isValid() == false)
+	  	if(graph[source.getX()][source.getY()].isValid() == false || graph[dest.getX()][dest.getY()].getTerrain() == graph[dest.getX()][dest.getY()].getTerrain().WALKABLE)
 	  	{
 	  		path.add(0, source);
 	  		return -1;//error handling
@@ -94,7 +94,7 @@ public class ShortestPathAlgorithm  {
 					int adjRow = currX + rowNum[i];
 					int adjCol = currY + colNum[i];
 					//checks to see if the integers go over the array size, if a node has not been visited, and if the node is valid
-					if(adjRow >=0 && adjRow < ROW && adjCol >= 0 && adjCol< COL && visitedNodes[adjRow][adjCol] == false && graph[adjRow][adjCol].isValid())
+					if(adjRow >=0 && adjRow < ROW && adjCol >= 0 && adjCol< COL && visitedNodes[adjRow][adjCol] == false && graph[dest.getX()][dest.getY()].getTerrain() == graph[dest.getX()][dest.getY()].getTerrain().WALKABLE)
 					{
 						visitedNodes[adjRow][adjCol] = true;
 						QueueNode adjNode = new QueueNode(graph[adjRow][adjCol],currNode.getDistance()+1, currNode);
