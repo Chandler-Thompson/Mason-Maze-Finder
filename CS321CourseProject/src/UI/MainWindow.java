@@ -1,29 +1,25 @@
 package UI;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import java.awt.GridLayout;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.MouseWheelEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.awt.Color;
-import java.awt.Dimension;
-
 import javax.swing.JSplitPane;
-import javax.swing.JViewport;
 import javax.swing.SwingConstants;
-import javax.swing.JScrollPane;
+
+import User.Profile;
 
 public class MainWindow {
 
@@ -71,7 +67,8 @@ public class MainWindow {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new MainFrame();
+		//TODO: Remove "TestUser" and replace with actual login
+		frame = new MainFrame("TestUser");
 		frame.setSize(width, height);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -88,6 +85,7 @@ public class MainWindow {
 		
 		// We use a split pane to divide the UI into two separate sections: controls & map.
 		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapPanel);
+		
 		splitPane.setDividerLocation(dividerLocation);
 		splitPane.setResizeWeight(resizeWeight);
 		
@@ -112,6 +110,65 @@ public class MainWindow {
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 0;
 		frame.getContentPane().add(splitPane, gbc_splitPane);
+
+		JButton setStartingPointButton = new JButton("Set Starting Point");
+		setStartingPointButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.setNextClickStart(true);
+			}
+		});
+		
+		JButton btnSetDestination = new JButton("Set Destination");
+		btnSetDestination.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.setNextClickDest(true);
+			}
+		});		
+		
+		JButton btnCalculatePath = new JButton("Calculate Path");
+		btnCalculatePath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.generatePaths();
+			}
+		});
+		
+		JButton btnClearSetNodes = new JButton("Clear Path");
+		btnClearSetNodes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.clearPathNodes();
+			}
+		});
+		
+		JButton btnSavePath = new JButton("Save Path");
+		btnSavePath.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.savePath();
+			}
+		});
+		
+		JButton btnClearSelectedNodes = new JButton("Clear Selection");
+		btnClearSelectedNodes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.clearSelection();
+			}
+		});
+		
+		JButton btnTakeScreenshot = new JButton("Take Screenshot");
+		btnTakeScreenshot.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.takeScreenshot();
+			}
+		});
+		
+		controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		controlPanel.add(setStartingPointButton);
+		controlPanel.add(btnSetDestination);
+		controlPanel.add(btnCalculatePath);
+		controlPanel.add(btnClearSetNodes);
+		controlPanel.add(btnSavePath);
+		controlPanel.add(btnClearSelectedNodes);
+		controlPanel.add(btnTakeScreenshot);
+
 	}
 
 }
