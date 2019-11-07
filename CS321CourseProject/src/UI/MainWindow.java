@@ -36,10 +36,11 @@ import com.jgoodies.forms.layout.RowSpec;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import java.awt.FlowLayout;
-
 public class MainWindow {
 
 	private MainFrame frame;
+	
+	private BufferedImage mapImage;
 	
 	private static final int width = 1280;
 	private static final int height = 720;
@@ -63,8 +64,8 @@ public class MainWindow {
 					MainWindow window = new MainWindow(regularCampusMapPath, campusMapForNodesJpgPath);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace()	;
-				}
+					e.printStackTrace();
+				} 
 			}
 		});
 	}
@@ -100,18 +101,34 @@ public class MainWindow {
 		
 		// We use a split pane to divide the UI into two separate sections: controls & map.
 		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapPanel);
-		
 		splitPane.setDividerLocation(dividerLocation);
 		splitPane.setResizeWeight(resizeWeight);
 		
 		ImageIcon mapIcon = new ImageIcon(this.displayImagePath);
+		
 		JLabel mapImageLabel = new JLabel(mapIcon);
 		
 		mapImageLabel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
-		
+
 		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
+
+		JScrollPane scrollPane = new JScrollPane(mapImageLabel) {	
+			/*@Override
+		    protected void processMouseWheelEvent(MouseWheelEvent e) {
+				if (frame.getControlPressed()) 
+					System.out.println("Yeet");
+		        super.processMouseWheelEvent(e);
+		    }*/
+		};
+		
+		scrollPane.getVerticalScrollBar().setUnitIncrement(12);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(12);
+		
+		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
+
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapPanel.add(mapImagePanel);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
@@ -125,6 +142,7 @@ public class MainWindow {
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 0;
 		frame.getContentPane().add(splitPane, gbc_splitPane);
+
 
 		JButton setStartingPointButton = new JButton("Set Starting Point");
 		setStartingPointButton.addActionListener(new ActionListener() {

@@ -401,8 +401,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
             clampZoom();
         	repaint();
         }
-        super.processMouseWheelEvent(eventArgs);
-    }
+	}
 	
 	/**
 	 * This is related to the UI. We must specify a "preferred size" for this element in order for a parental "scroll pane" to work properly.
@@ -625,12 +624,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		this.shortestPath.addAll(actualPath);
 		repaint();
 	}
-	
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent eventArgs) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	public void mouseDragged(MouseEvent eventArgs) {
 		// Get the current point and determine how much the user has moved since clicking.
@@ -641,11 +634,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		
 		shouldTranslate = true;
 		repaint();
-	}
-
-	public void mouseMoved(MouseEvent eventArgs) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	/**
@@ -738,11 +726,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		// System.out.println("Current Image Bounds: " + imageBounds);
 	}
 
-	public void mouseEntered(MouseEvent eventArgs) {
-		// TODO Auto-generated method stub
-		
-	}
-
+	@Override
 	public void mouseExited(MouseEvent eventArgs) {
 		// TODO Auto-generated method stub
 		
@@ -780,5 +764,23 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			this.location = p;
 			this.valid = b;
 		}
+	}
+
+	@Override
+	public void mouseMoved(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }

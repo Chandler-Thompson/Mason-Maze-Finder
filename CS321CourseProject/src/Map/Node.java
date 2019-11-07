@@ -1,6 +1,5 @@
 package Map;
 
-
 import java.awt.Point;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -156,8 +155,9 @@ public class Node implements Serializable {
     {
     	return y;
     }
+    
     public Point getPointFlipped() {
     	return new Point(y,x);
-    }    
-    
+    }
+
 }
