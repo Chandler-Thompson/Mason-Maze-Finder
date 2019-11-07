@@ -173,6 +173,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	private LinkedList<Node> path = new LinkedList<Node>();
 	
+	/**
+	 * Used for serialization of nodes. Stores all of the nodes individually, without edges.
+	 * After nodes are loaded from saved file their edges are calculated and the nodes are then
+	 * thrown into the above mentioned 2d array of nodes. This is only used on startup.
+	 */
 	private EdgelessNode[][] edgelessNodes = null;
 	
 	/**
@@ -221,6 +226,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	
 	private boolean nextClickSetsStart = false;
 	private boolean nextClickSetsDest = false;
+	
+	//used for holding the selection from click-and-drag
+	private Selection clickAndDragSelection = null;
+	
+	private boolean isDragging = false;//activated when left mouse button pressed, deactivated when released
+	private boolean isSelecting = false;//activated when right mouse button pressed, deactivated when released
 	
 	private Node startingNode = null;
 	private Node destNode = null;
@@ -538,6 +549,31 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         		g.fillOval((int)(center.x), (int)(center.y), pathOvalWidth, pathOvalWidth);
         	}        	
         }
+        
+        //draw the selection if there is one
+        if(!clickAndDragSelection.isEmpty()) {
+        	
+        	System.out.println("Selection not Empty");
+        	
+        	Node[] selectedNodes = (Node[]) clickAndDragSelection.getNodes().toArray();
+        
+        	int nodeRectWidth = (int)(this.pathNodeVisualWidth * (1 / currentZoomAmount));
+    	    // Clamp the value of ovalWidth between the pre-defined constraints.
+    	    if (nodeRectWidth > maxPathNodeVisualWidth)
+    	    	nodeRectWidth = maxPathNodeVisualWidth;
+    	    else if (nodeRectWidth < minPathNodeVisualWidth)
+    	    	nodeRectWidth = minPathNodeVisualWidth;
+        	
+        	//set color of selected nodes
+    		Color transparentGreen = new Color(66, 245, 87, pathTransparency);
+    		g.setColor(transparentGreen);
+        	
+    		//draw over only valid selected nodes
+        	for(Node node : selectedNodes)
+        		g.fillRect(node.getX(), node.getY(), nodeRectWidth, nodeRectWidth);
+        	
+        }
+        
 	}
 	
 	private Rectangle getImageBounds() {
@@ -583,14 +619,16 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		}
 	}
 	
-	public void clearSelectedNodes() {
+	public void clearPathNodes() {
 		this.startingNode = null;
 		this.destNode = null;
 		shortestPath.clear();
 		
 		repaint();
 	}
+	
 	public void generatePaths() {
+		
 		if (this.startingNode == null && this.destNode == null) 
 			JOptionPane.showMessageDialog(null, "Please specify both a starting node and a destination node first.", "Error", JOptionPane.WARNING_MESSAGE);
 		else if (this.startingNode == null) 
@@ -633,14 +671,56 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	}
 
 	public void mouseDragged(MouseEvent eventArgs) {
-		// Get the current point and determine how much the user has moved since clicking.
-		Point currentPoint = eventArgs.getLocationOnScreen();
 		
-		translateX = currentPoint.x - mouseDragStart.x;
-		translateY = currentPoint.y - mouseDragStart.y;
+		System.out.println("Entered Dragging Field...");
 		
-		shouldTranslate = true;
-		repaint();
+		if(isDragging) {//LEFT MOUSE BUTTON IS HELD (MOVE CAMERA)
+			
+			System.out.println("Dragging...");
+			
+			// Get the current point and determine how much the user has moved since clicking.
+			Point currentPoint = eventArgs.getLocationOnScreen();
+			
+			translateX = currentPoint.x - mouseDragStart.x;
+			translateY = currentPoint.y - mouseDragStart.y;
+			
+			shouldTranslate = true;
+			repaint();
+		}else if(isSelecting) {//RIGHT MOUSE BUTTON IS HELD (CREATE SELECTION)
+			
+			System.out.println("Selecting...");
+			
+			Point startNodeCoords = nodeToImageCoordinates(mouseDragStart);//beginning node point of selection
+			
+			Point endNodeCoords = eventArgs.getPoint();//end map point of selection
+			endNodeCoords = nodeToImageCoordinates(endNodeCoords);//end node point of selection
+			
+			//potentially swap around x and y points so that we can always assume the user started their
+			//selection in the upper left corner of a square and ended it in the bottom left corner
+			//as opposed to any of the other 3 possible combinations of click-and-drag selection
+			int startX = (startNodeCoords.x <= endNodeCoords.x) ? startNodeCoords.x : endNodeCoords.x;
+			int endX = (endNodeCoords.x > startNodeCoords.x) ? endNodeCoords.x : startNodeCoords.x;
+			
+			int startY = (startNodeCoords.y <= endNodeCoords.y) ? startNodeCoords.y : endNodeCoords.y;
+			int endY = (endNodeCoords.y > startNodeCoords.y) ? endNodeCoords.y : startNodeCoords.y; 
+			
+			//loop through all nodes in the selected square and add to Selection
+			for(int x = startX; x < endX; x++) {
+				for(int y = startY; y < endY; y++) {
+					
+					Node currNode = nodes[y][x];//the current node at (x, y)
+					
+					if(currNode.isValid()) {//if node is valid, add to Selection
+						
+						clickAndDragSelection.addNode(nodes[y][x]);
+						
+					}
+					
+				}
+			}
+			
+		}
+		
 	}
 
 	public void mouseMoved(MouseEvent eventArgs) {
@@ -692,6 +772,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	}
 
 	public void mouseClicked(MouseEvent eventArgs) {
+		
+		//Get the point that was clicked and output the validity of the node at that point
 		Point clicked = eventArgs.getPoint();
 		Clicked c = null;
 		if (imageBounds.contains(clicked)) {
@@ -704,7 +786,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			Node clickedNode = nodes[adjustedForImage.y][adjustedForImage.x];
 			
 			
-			if (clickedNode.getValid()) {
+			if (clickedNode.isValid()) {
 				path.add(clickedNode);
 				System.out.println("Clicked VALID node at image coordinates (" + adjustedForImage.getX() + "," + adjustedForImage.getY() + ")" + ". (Image clicked!)");
 				c = new Clicked(clicked, true);
@@ -753,20 +835,54 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		// Clicked means the user pressed and released the button.
 		
 		updateOffsetsOnTranslate = false; // User clicked so this should be false.
+		
+		System.out.println("Mouse Button " + eventArgs.getButton() + " pressed. Button1: " + MouseEvent.BUTTON1 + " Button2: " + MouseEvent.BUTTON2);
+		
+		if(eventArgs.getButton() == MouseEvent.BUTTON1)//left mouse button, allow moving of camera
+			isDragging = true;
+		
+		if(eventArgs.getButton() == MouseEvent.BUTTON2)//right mouse button, allow creation of Selection
+			isSelecting = true;
+		
 		// getPoint() is relative to the source component.
 		mouseDragStart = MouseInfo.getPointerInfo().getLocation();
 	}
 
 	public void mouseReleased(MouseEvent eventArgs) {
-		updateOffsetsOnTranslate = true;	// That also means this should now be set to true.
+		
+		System.out.println("Mouse Button " + eventArgs.getButton() + " released. Button1: " + MouseEvent.BUTTON1 + " Button2: " + MouseEvent.BUTTON2);
+		
+		if(eventArgs.getButton() == MouseEvent.BUTTON1) {//LEFT MOUSE BUTTON RELEASED (DRAG CAMERA)
+			
+			updateOffsetsOnTranslate = true;	// That also means this should now be set to true.
+			isDragging = false;
+			
+		}
+		
+		if(eventArgs.getButton() == MouseEvent.BUTTON2) {//RIGHT MOUSE BUTTON RELEASED (MAKE SELECTION)
+			
+			isSelecting = false;
+			
+		}
 		
 		repaint();
+		
 	}
+	
+	public Selection getSelection() {
+		return clickAndDragSelection;
+	}
+	
+	public void clearSelection() {
+		clickAndDragSelection.clear();
+	}
+	
 	public Node[][] getGraph()
 	{
 		return this.nodes;
 		
 	}
+	
 	public LinkedList<Node> getPath()
 	{
 		return this.path;

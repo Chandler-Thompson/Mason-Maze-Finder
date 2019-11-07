@@ -30,9 +30,9 @@ import java.awt.event.ActionEvent;
 import java.awt.BorderLayout;
 import javax.swing.BoxLayout;
 import java.awt.CardLayout;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.RowSpec;
+//import com.jgoodies.forms.layout.FormLayout;
+//import com.jgoodies.forms.layout.ColumnSpec;
+//import com.jgoodies.forms.layout.RowSpec;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import java.awt.FlowLayout;
@@ -147,10 +147,17 @@ public class MainWindow {
 			}
 		});
 		
-		JButton btnClearSetNodes = new JButton("Clear Selected");
+		JButton btnClearSetNodes = new JButton("Clear Path");
 		btnClearSetNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapImagePanel.clearSelectedNodes();
+				mapImagePanel.clearPathNodes();
+			}
+		});
+		
+		JButton btnClearSelectedNodes = new JButton("Clear Selection");
+		btnClearSelectedNodes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.clearSelection();
 			}
 		});
 		
@@ -159,6 +166,7 @@ public class MainWindow {
 		controlPanel.add(btnSetDestination);
 		controlPanel.add(btnCalculatePath);
 		controlPanel.add(btnClearSetNodes);
+		controlPanel.add(btnClearSelectedNodes);
 
 	}
 
