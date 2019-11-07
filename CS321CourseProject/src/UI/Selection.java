@@ -17,13 +17,13 @@ import Map.Terrain;
  */
 public class Selection {
 
-	Set<Node> nodes;
+	HashSet<Node> nodes;
 	
 	public Selection() {
 		nodes = new HashSet<>();
 	}
 	
-	public Selection(Set<Node> nodes) {
+	public Selection(HashSet<Node> nodes) {
 		this.nodes = nodes;
 	}
 	
@@ -45,7 +45,7 @@ public class Selection {
 		return nodes.isEmpty();
 	}
 	
-	public Set<Node> getNodes(){
+	public HashSet<Node> getNodes(){
 		return nodes;
 	}
 	
