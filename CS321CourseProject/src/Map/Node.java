@@ -39,6 +39,21 @@ public class Node implements Serializable {
         this.bottomNode = bottom;
     }
     
+    //dummy node constructor (used by Profile{ loadProfile() })
+    public Node(int x, int y) {
+    	
+    	this.id = -1;
+    	this.label = "";
+    	this.valid = true;//assuming being used by loadProfile, if was part of a path, then is valid
+    	this.x = x;
+    	this.y = y;
+    	this.topNode = null;
+    	this.leftNode = null;
+    	this.rightNode = null;
+    	this.bottomNode = null;
+    	
+    }
+    
     @Override
     public boolean equals(Object obj) {
     	if (this == obj)
@@ -143,15 +158,7 @@ public class Node implements Serializable {
     public Point getPoint() {
     	return new Point(x,y);
     }
-    public int getXcord()
-    {
-    	return x;
-    }
     
-    public int getYcord()
-    {
-    	return y;
-    }
     public Point getPointFlipped() {
     	return new Point(y,x);
     }    
