@@ -54,6 +54,18 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	private final int nodeVisualIndicationWidth = 13;
 	
+	/**
+	 * Scaling the nodes across the larger image (that is displayed to the user) results in the nodes being
+	 * slightly too high when displayed. Therefore we apply a semi-hard-coded translation downwards to nodes. 
+	 * It is semi-hard-coded in that it changes depending on the current zoom.
+	 */
+	private final int nodeDownTranslate = 10;
+	
+	// For selection
+	private final int selectionVisualWidth = 7; 
+	private final int maxSelectionVisualWidth = 9;
+	private final int minSelectionVisualWidth = 7;
+	
 	// These are for start and destination nodes.
 	private final int maxNodeVisualWidth = 20;
 	private final int minNodeVisualWidth = 12;
@@ -509,9 +521,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	//System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.startingNode.getPointFlipped());
         	
-        	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
-        	// being where the user clicked).
-    		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius); 
+        	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval being where the user clicked).        	
+    		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius + 15); 
         	//System.out.println("Drawing oval for starting node at " + center.toString() + " with width " + ovalWidth);
         	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
@@ -522,11 +533,13 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	//System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.destNode.getPointFlipped());
         	
+        	int downShift = (int)(nodeDownTranslate * (1 / this.currentZoomAmount));
+        	
         	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
         	// being where the user clicked).
     		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius);         	
         	//System.out.println("Drawing oval for destination node at " + center.toString() + " with width " + ovalWidth);
-        	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
+        	g.fillOval((int)(center.x), (int)(center.y + downShift), ovalWidth, ovalWidth);
         }
         
         if (shortestPath.size() > 0) {
@@ -551,7 +564,10 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         		Point topLeft = nodeToImageCoordinates(cur.getPointFlipped());
         		
         		Point center = new Point(topLeft.x - pathOvalRadius, topLeft.y - pathOvalRadius); 
-        		g.fillOval((int)(center.x), (int)(center.y), pathOvalWidth, pathOvalWidth);
+        		
+        		int downShift = (int)(nodeDownTranslate * this.currentZoomAmount);
+        		
+        		g.fillOval((int)(center.x), (int)(center.y + downShift), pathOvalWidth, pathOvalWidth);
         	}        	
         }
         
@@ -562,21 +578,32 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	
         	HashSet<Node> selectedNodes = clickAndDragSelection.getNodes();
         
-        	int nodeRectWidth = (int)(this.pathNodeVisualWidth * (1 / currentZoomAmount));
+        	int selectionWidth = (int)(this.selectionVisualWidth * (1 / currentZoomAmount));
     	    // Clamp the value of rectWidth between the pre-defined constraints.
-    	    if (nodeRectWidth > maxPathNodeVisualWidth)
-    	    	nodeRectWidth = maxPathNodeVisualWidth;
-    	    else if (nodeRectWidth < minPathNodeVisualWidth)
-    	    	nodeRectWidth = minPathNodeVisualWidth;
+    	    if (selectionWidth > this.maxSelectionVisualWidth)
+    	    	selectionWidth = maxSelectionVisualWidth;
+    	    else if (selectionWidth < this.minSelectionVisualWidth)
+    	    	selectionWidth = minSelectionVisualWidth;
         	
         	//set color of selected nodes
     		Color transparentGreen = new Color(66, 245, 87, pathTransparency);
     		g.setColor(transparentGreen);
         	
+    		// draw every other
+    		int draw = 0;
     		//draw over only valid selected nodes
         	for(Node node : selectedNodes) {
+        		if (draw++ != 0) {
+        			if (draw >= 5)
+        			{
+        				draw = 0;
+        			}
+        			continue;
+        		}
+        		draw++;
         		Point center = nodeToImageCoordinates(node.getPointFlipped());
-        		g.fillRect(center.x, center.y, nodeRectWidth, nodeRectWidth);
+        		int downShift = (int)(nodeDownTranslate * (1 / this.currentZoomAmount));
+        		g.fillOval(center.x, center.y + downShift, selectionWidth, selectionWidth);
         	}
         	
         }
@@ -665,7 +692,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			
 			shouldTranslate = true;
 			
-		}else if(isSelecting) {//RIGHT MOUSE BUTTON IS HELD (CREATE SELECTION)
+		}else if (isSelecting) {//RIGHT MOUSE BUTTON IS HELD (CREATE SELECTION)
 			
 			System.out.println("Selecting...");
 			
