@@ -521,8 +521,10 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	//System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.startingNode.getPointFlipped());
         	
-        	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval being where the user clicked).        	
-    		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius + 15); 
+        	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
+        	// being where the user clicked).
+    		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius); 
+    		
         	//System.out.println("Drawing oval for starting node at " + center.toString() + " with width " + ovalWidth);
         	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
@@ -539,7 +541,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	// being where the user clicked).
     		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius);         	
         	//System.out.println("Drawing oval for destination node at " + center.toString() + " with width " + ovalWidth);
-        	g.fillOval((int)(center.x), (int)(center.y + downShift), ovalWidth, ovalWidth);
+
+        	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
         
         if (shortestPath.size() > 0) {
@@ -567,7 +570,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         		
         		int downShift = (int)(nodeDownTranslate * this.currentZoomAmount);
         		
-        		g.fillOval((int)(center.x), (int)(center.y + downShift), pathOvalWidth, pathOvalWidth);
+        		g.fillOval((int)(center.x), (int)(center.y), pathOvalWidth, pathOvalWidth);
         	}        	
         }
         
@@ -605,8 +608,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         		int downShift = (int)(nodeDownTranslate * (1 / this.currentZoomAmount));
         		g.fillOval(center.x, center.y + downShift, selectionWidth, selectionWidth);
         	}
-        	
-        }
+    	}
         
 	}
 	
@@ -691,9 +693,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			translateY = currentPoint.y - mouseDragStart.y;
 			
 			shouldTranslate = true;
-			
-		}else if (isSelecting) {//RIGHT MOUSE BUTTON IS HELD (CREATE SELECTION)
-			
+		}
+		else if (isSelecting) {//RIGHT MOUSE BUTTON IS HELD (CREATE SELECTION)	
 			System.out.println("Selecting...");
 			
 			Point startNodeCoords = panelToNodeCoordinates(mouseSelectionStart);//beginning node point of selection

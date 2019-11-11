@@ -32,7 +32,7 @@ public class MainWindow {
 	private JButton btnClearSetNodes;
 	private JButton btnTakeScreenshot;
 	private JButton btnClearSelectedNodes;
-	private JButton btnSavePath;	
+	private JButton btnSavePath;
 	
 	private static final int width = 1280;
 	private static final int height = 720;
@@ -45,7 +45,7 @@ public class MainWindow {
 
 	private String displayImagePath = null;
 	private String nodesImagePath = null;
-
+	
 	/**
 	 * Launch the application.
 	 */
@@ -109,6 +109,7 @@ public class MainWindow {
 		mapPanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapJPanel.add(mapPanel);
 		mapPanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
+		
 		splitPane.setOrientation(SwingConstants.VERTICAL);
 		splitPane.setBackground(Color.GREEN);
 		GridBagConstraints gbc_splitPane = new GridBagConstraints();
