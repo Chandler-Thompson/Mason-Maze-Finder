@@ -564,7 +564,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	// If we're zoomed out, it isn't so important to display each and every node.
         	for (int i = 0; i < shortestPath.size(); i += pathIncrement) {
         		Node cur = shortestPath.get(i);
-        		Point topLeft = nodeToImageCoordinates(cur.getPointFlipped());
+        		Point topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true);
         		
         		Point center = new Point(topLeft.x - pathOvalRadius, topLeft.y - pathOvalRadius); 
         		
@@ -759,12 +759,16 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		return adjusted;	
 	}
 	
+	public Point nodeToImageCoordinates(Point p) {
+		return this.nodeToImageCoordinates(p, false);
+	}
+	
 	/**
 	 * Given the indices of a node in the 2D Node[][] nodes array, return the corresponding image coordinates.
 	 * @param p
 	 * @return
 	 */
-	public Point nodeToImageCoordinates(Point p) {
+	public Point nodeToImageCoordinates(Point p, boolean applyDownshift) {
 		double ratioX = imageBounds.getWidth() / mapImage.getWidth(null);
 		//System.out.println("\nimageBounds.getWidth() / mapImage.getWidth(null) = " + imageBounds.getWidth() + "/" + mapImage.getWidth(null) + " = " + ratioX);
 		double ratioY = imageBounds.getHeight() / mapImage.getHeight(null);
@@ -782,6 +786,13 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		y = (int)(y * ratioY);
 		//System.out.println("y += this.drawImageY --> " + y + " += " + this.drawImageY + " --> " + ((int)(y + drawImageY)));
 		y += this.drawImageY;
+		
+		if (applyDownshift) {
+			int downShift = 10;
+			downShift = (int)(downShift / scaleX);
+			downShift = (int)(downShift * ratioX);
+			y += downShift;
+		}
 		
 		return new Point(x,y);
 	}

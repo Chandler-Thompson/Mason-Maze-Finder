@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import UI.MapPanel;
+
 public class MapPanelTest {
 	
 	/**
