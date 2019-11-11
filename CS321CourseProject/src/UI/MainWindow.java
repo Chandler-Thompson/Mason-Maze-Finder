@@ -24,6 +24,15 @@ import User.Profile;
 public class MainWindow {
 
 	private MainFrame frame;
+	private MapPanel mapPanel;
+	
+	private JButton setStartingPointButton;
+	private JButton btnSetDestination; 
+	private JButton btnCalculatePath;
+	private JButton btnClearSetNodes;
+	private JButton btnTakeScreenshot;
+	private JButton btnClearSelectedNodes;
+	private JButton btnSavePath;	
 	
 	private static final int width = 1280;
 	private static final int height = 720;
@@ -36,7 +45,7 @@ public class MainWindow {
 
 	private String displayImagePath = null;
 	private String nodesImagePath = null;
-	
+
 	/**
 	 * Launch the application.
 	 */
@@ -81,10 +90,10 @@ public class MainWindow {
 		
 		// Create JPanels for the map and the control area.
 		JPanel controlPanel = new JPanel();
-		JPanel mapPanel = new JPanel();
+		JPanel mapJPanel = new JPanel();
 		
 		// We use a split pane to divide the UI into two separate sections: controls & map.
-		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapPanel);
+		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapJPanel);
 		
 		splitPane.setDividerLocation(dividerLocation);
 		splitPane.setResizeWeight(resizeWeight);
@@ -94,12 +103,12 @@ public class MainWindow {
 		
 		mapImageLabel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		
-		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
+		mapJPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
-		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
-		mapPanel.add(mapImagePanel);
-		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
+		mapPanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
+		mapPanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
+		mapJPanel.add(mapPanel);
+		mapPanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		splitPane.setOrientation(SwingConstants.VERTICAL);
 		splitPane.setBackground(Color.GREEN);
 		GridBagConstraints gbc_splitPane = new GridBagConstraints();
@@ -111,52 +120,52 @@ public class MainWindow {
 		gbc_splitPane.gridy = 0;
 		frame.getContentPane().add(splitPane, gbc_splitPane);
 
-		JButton setStartingPointButton = new JButton("Set Starting Point");
+		setStartingPointButton = new JButton("Set Starting Point");
 		setStartingPointButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapImagePanel.setNextClickStart(true);
+				mapPanel.setNextClickStart(true);
 			}
 		});
 		
-		JButton btnSetDestination = new JButton("Set Destination");
+		btnSetDestination = new JButton("Set Destination");
 		btnSetDestination.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapImagePanel.setNextClickDest(true);
+				mapPanel.setNextClickDest(true);
 			}
 		});		
 		
-		JButton btnCalculatePath = new JButton("Calculate Path");
+		btnCalculatePath = new JButton("Calculate Path");
 		btnCalculatePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapImagePanel.generatePaths();
+				mapPanel.generatePaths();
 			}
 		});
 		
-		JButton btnClearSetNodes = new JButton("Clear Path");
+		btnClearSetNodes = new JButton("Clear Path");
 		btnClearSetNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapImagePanel.clearPathNodes();
+				mapPanel.clearPathNodes();
 			}
 		});
 		
-		JButton btnSavePath = new JButton("Save Path");
+		btnSavePath = new JButton("Save Path");
 		btnSavePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapImagePanel.savePath();
+				mapPanel.savePath();
 			}
 		});
 		
-		JButton btnClearSelectedNodes = new JButton("Clear Selection");
+		btnClearSelectedNodes = new JButton("Clear Selection");
 		btnClearSelectedNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapImagePanel.clearSelection();
+				mapPanel.clearSelection();
 			}
 		});
 		
-		JButton btnTakeScreenshot = new JButton("Take Screenshot");
+		btnTakeScreenshot = new JButton("Take Screenshot");
 		btnTakeScreenshot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapImagePanel.takeScreenshot();
+				mapPanel.takeScreenshot();
 			}
 		});
 		
@@ -169,6 +178,14 @@ public class MainWindow {
 		controlPanel.add(btnClearSelectedNodes);
 		controlPanel.add(btnTakeScreenshot);
 
+	}
+	
+	public MainFrame getMainFrame() {
+		return this.frame;
+	}
+	
+	public MapPanel getMapPanel() {
+		return this.mapPanel;
 	}
 
 }
