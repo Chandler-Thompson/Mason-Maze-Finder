@@ -564,11 +564,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	// If we're zoomed out, it isn't so important to display each and every node.
         	for (int i = 0; i < shortestPath.size(); i += pathIncrement) {
         		Node cur = shortestPath.get(i);
-        		Point topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true);
         		
-        		Point center = new Point(topLeft.x - pathOvalRadius, topLeft.y - pathOvalRadius); 
+        		Point topLeft = null;
         		
-        		int downShift = (int)(nodeDownTranslate * this.currentZoomAmount);
+        		topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true);
+        		
+    			Point center = new Point(topLeft.x - pathOvalRadius, topLeft.y - pathOvalRadius); 
         		
         		g.fillOval((int)(center.x), (int)(center.y), pathOvalWidth, pathOvalWidth);
         	}        	
@@ -669,8 +670,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			actualPath.add(n);
 		}
 		// Remove the first and last elements, which will be the destination and the start, respectively.
-		actualPath.removeFirst();
-		actualPath.removeLast();
+		// actualPath.removeFirst();
+		// actualPath.removeLast();
 		this.shortestPath.clear();
 		this.shortestPath.addAll(actualPath);
 		repaint();
@@ -763,12 +764,16 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		return this.nodeToImageCoordinates(p, false);
 	}
 	
+	public Point nodeToImageCoordinates(Point p, boolean applyDownshift) {
+		return this.nodeToImageCoordinates(p, applyDownshift, 10);
+	}
+	
 	/**
 	 * Given the indices of a node in the 2D Node[][] nodes array, return the corresponding image coordinates.
 	 * @param p
 	 * @return
 	 */
-	public Point nodeToImageCoordinates(Point p, boolean applyDownshift) {
+	public Point nodeToImageCoordinates(Point p, boolean applyDownshift, int downShift) {
 		double ratioX = imageBounds.getWidth() / mapImage.getWidth(null);
 		//System.out.println("\nimageBounds.getWidth() / mapImage.getWidth(null) = " + imageBounds.getWidth() + "/" + mapImage.getWidth(null) + " = " + ratioX);
 		double ratioY = imageBounds.getHeight() / mapImage.getHeight(null);
@@ -788,7 +793,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		y += this.drawImageY;
 		
 		if (applyDownshift) {
-			int downShift = 10;
 			downShift = (int)(downShift / scaleX);
 			downShift = (int)(downShift * ratioX);
 			y += downShift;
@@ -926,7 +930,9 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		shortestPath.clear();
 		
 		//TODO: remove this when no longer needed
-		parent.getProfile().getSavedPaths().remove(0);
+		ArrayList<ArrayList<Node>> savedPaths = parent.getProfile().getSavedPaths(); 
+		if (savedPaths.size() > 0)
+			savedPaths.remove(0);
 		parent.getProfile().saveProfile();
 		
 		repaint();
@@ -946,6 +952,26 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	public void clearSelection() {
 		clickAndDragSelection.clear();
 		repaint();
+	}
+	
+	public void setStartingNode(Node n) {
+		this.startingNode = n;
+	}
+	
+	public void setDestinationNode(Node n) {
+		this.destNode = n;
+	}
+	
+	public Node getStartingNode() {
+		return this.startingNode;
+	}
+	
+	public Node getDestinationNode() {
+		return this.destNode;
+	}
+	
+	public ArrayList<Node> getShortestPath() {
+		return this.shortestPath;
 	}
 	
 	public Node[][] getGraph()

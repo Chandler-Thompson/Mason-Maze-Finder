@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
+import Map.Node;
 import User.Profile;
 
 public class MainWindow {
@@ -55,6 +56,14 @@ public class MainWindow {
 				try {
 					MainWindow window = new MainWindow(regularCampusMapPath, campusMapForNodesJpgPath);
 					window.frame.setVisible(true);
+					
+					// Was just testing something. We can just remove this once I'm done using it for tests. - Ben 
+					/*MapPanel panel = window.getMapPanel();
+					Node[][] nodes = panel.getGraph();
+					Node n1 = nodes[524][705];
+					Node n2 = nodes[384][642];
+					panel.setStartingNode(n1);
+					panel.setDestinationNode(n2);*/
 				} catch (Exception e) {
 					e.printStackTrace()	;
 				}
