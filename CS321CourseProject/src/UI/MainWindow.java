@@ -180,6 +180,34 @@ public class MainWindow {
 
 	}
 	
+	public JButton getStartingPointButton() {
+		return setStartingPointButton;
+	}
+	
+	public JButton getSetDestinationButton() {
+		return btnSetDestination;
+	}
+	
+	public JButton getCalculatePathButton() {
+		return btnCalculatePath;
+	}
+	
+	public JButton getClearSetNodesButton() {
+		return btnClearSetNodes;
+	}
+	
+	public JButton getTakeScreenshotButton() {
+		return btnTakeScreenshot;
+	}
+	
+	public JButton getClearSelectedNodesButton() {
+		return btnClearSelectedNodes;
+	}
+	
+	public JButton getSavePathButton() {
+		return btnSavePath;
+	}	
+	
 	public MainFrame getMainFrame() {
 		return this.frame;
 	}
