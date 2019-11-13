@@ -6,6 +6,7 @@ import java.util.Queue;
 
 import Map.Node;
 import Map.QueueNode;
+import Map.Terrain;
 
 public class ShortestPathAlgorithm  {
 	
@@ -94,7 +95,7 @@ public class ShortestPathAlgorithm  {
 					int adjRow = currX + rowNum[i];
 					int adjCol = currY + colNum[i];
 					//checks to see if the integers go over the array size, if a node has not been visited, and if the node is valid
-					if(adjRow >=0 && adjRow < ROW && adjCol >= 0 && adjCol< COL && visitedNodes[adjRow][adjCol] == false && graph[adjRow][adjCol].isValid())
+					if(adjRow >=0 && adjRow < ROW && adjCol >= 0 && adjCol< COL && visitedNodes[adjRow][adjCol] == false && graph[adjRow][adjCol].getTerrain() == Terrain.WALKABLE)
 					{
 						visitedNodes[adjRow][adjCol] = true;
 						QueueNode adjNode = new QueueNode(graph[adjRow][adjCol],currNode.getDistance()+1, currNode);

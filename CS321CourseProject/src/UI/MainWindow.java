@@ -146,6 +146,13 @@ public class MainWindow {
 			}
 		});
 		
+		JButton btnSaveSelectedNodes = new JButton("Save Selection");
+		btnSaveSelectedNodes.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				mapImagePanel.saveSelection();
+			}
+		});
+		
 		JButton btnClearSelectedNodes = new JButton("Clear Selection");
 		btnClearSelectedNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -166,6 +173,7 @@ public class MainWindow {
 		controlPanel.add(btnCalculatePath);
 		controlPanel.add(btnClearSetNodes);
 		controlPanel.add(btnSavePath);
+		controlPanel.add(btnSaveSelectedNodes);
 		controlPanel.add(btnClearSelectedNodes);
 		controlPanel.add(btnTakeScreenshot);
 

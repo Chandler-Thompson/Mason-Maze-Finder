@@ -33,6 +33,7 @@ import javax.swing.JPanel;
 
 import Map.EdgelessNode;
 import Map.Node;
+import Map.Terrain;
 import Pathfinding.ShortestPathAlgorithm;
 
 // https://crab.rutgers.edu/~guyk/BFS.pdf
@@ -246,7 +247,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			System.out.println("No previous saved paths found...");
 		}
 		
-		
 		addMouseWheelListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -264,8 +264,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		        int nodeID = 0;
 		        for (int i = 0; i < this.edgelessNodes.length; i++) {
 		        	for (int j = 0; j < this.edgelessNodes[i].length; j++) {
-		        		Node n = new Node(nodeID, "Node " + nodeID++, this.edgelessNodes[i][j].getValid(),
-		        							i, j, null, null, null, null);
+		        		
+		        		boolean isValid = this.edgelessNodes[i][j].getValid();
+		        		Terrain terrain = (isValid) ? Terrain.WALKABLE : Terrain.BLOCKED;
+		        		
+		        		Node n = new Node(nodeID, "Node " + nodeID++, isValid,
+		        							terrain, i, j, null, null, null, null);
 		        		nodes[i][j] = n;
 		        		if (i > 0) {
 		        			Node left = nodes[i - 1][j];
@@ -316,6 +320,33 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		//TODO: Edit nodes as they are created up above (instead of doing this)
+		ArrayList<HashSet<Node>> premadeUserSelections = parent.getProfile().getSavedSelections();
+		
+		if(premadeUserSelections != null) {
+		
+			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! Loading Persisted Selection");
+			
+			for(HashSet<Node> selectionSet : premadeUserSelections) {
+				
+				System.out.println("Selection found!");
+				System.out.println("Selection contains " + selectionSet.size() + " Nodes.");
+				
+				for(Node node : selectionSet) {
+				
+					System.out.println("Adding node from selection...");
+					
+					clickAndDragSelection.addNode(node);
+					nodes[node.getX()][node.getY()].setTerrain(node.getTerrain());//set actual map nodes to be of terrain from saved nodes
+				
+				}
+			}
+			
+		}
+		
+		
+		
 	}
 	
 	/**
@@ -346,12 +377,17 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
             argbValue += (((int) pixels[pixel + 1] & 0xff) << 8); // green
             argbValue += (((int) pixels[pixel + 2] & 0xff) << 16); // red
             boolean valid = (argbValue != -16777216);
+            
             if (valid)
             	numberOfValidNodes = numberOfValidNodes + 1;
-			Node nextNode = new Node(nodeID, "Node " + nodeID++, valid, row, col, 
+            
+			Node nextNode = new Node(nodeID, "Node " + nodeID++, valid, ((valid)?Terrain.WALKABLE:Terrain.BLOCKED), row, col, 
 					null, null, null, null);
+			
 			nodes[row][col] = nextNode;
+			
 			edgelessNodes[row][col] = new EdgelessNode(row, col, valid);
+			
 			if (col > 0) {
 				Node left = nodes[row][col - 1];
 				left.setRightNode(nextNode);
@@ -895,7 +931,23 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	
 	public void savePath() {
 		
-		parent.getProfile().savePath(shortestPath);
+		parent.getProfile().storePath(shortestPath);
+		parent.getProfile().saveProfile();
+		
+	}
+	
+	public void saveSelection() {
+		
+		//set selection to Blocked
+		clickAndDragSelection.setNodesTerrain(Terrain.BLOCKED);
+		
+		
+		HashSet<Node> selectedNodes = clickAndDragSelection.getNodes();
+		for(Node node : selectedNodes)
+			nodes[node.getX()][node.getY()].setTerrain(node.getTerrain());//update the live map (so the BFS takes selection into account)
+		
+		//save the terrain change on the selection to persist
+		parent.getProfile().storeSelection(clickAndDragSelection.getNodes());
 		parent.getProfile().saveProfile();
 		
 	}
@@ -905,7 +957,21 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	}
 	
 	public void clearSelection() {
+		
+		//set selection to Walkable
+		clickAndDragSelection.setNodesTerrain(Terrain.WALKABLE);
+		
+		HashSet<Node> selectedNodes = clickAndDragSelection.getNodes();
+		for(Node node : selectedNodes)
+			nodes[node.getX()][node.getY()].setTerrain(node.getTerrain());//update the live map to revert selection changes
+		
+		//get rid of the selection
 		clickAndDragSelection.clear();
+		
+		//remove all of the terrain edits from the selection
+		parent.getProfile().storeSelection(clickAndDragSelection.getNodes());
+		parent.getProfile().saveProfile();
+		
 		repaint();
 	}
 	

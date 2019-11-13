@@ -21,6 +21,7 @@ public class Node implements Serializable {
     public Node(int id, 
     		    String label, 
     		    boolean valid,
+    		    Terrain terrain,
     		    int x,
     		    int y,
     		    Node top, 
@@ -31,6 +32,7 @@ public class Node implements Serializable {
         this.id = id;
         this.label = label;
         this.valid = valid;
+        this.terrain = terrain;
         this.x = x;
         this.y = y;
         this.topNode = top;
