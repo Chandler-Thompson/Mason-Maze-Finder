@@ -337,7 +337,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		System.out.println("Generating grid of nodes using image...");
 		BufferedImage bufferedMapImage = ImageIO.read(new File(this.nodesImagePath));
 		//BufferedImage bufferedMapImage = ImageIO.read(MapPanel.class.getResource("C:\\Users\\Benjamin\\Documents\\School\\Fall 2019\\CS 321\\CS321\\CS321CourseProject\\src\\Res\\CampusMapForNodes.png"));
-		byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
+		 byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
 		
 		final int width = bufferedMapImage.getWidth();
         final int height = bufferedMapImage.getHeight();
@@ -613,6 +613,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         
 	}
 	
+	
+	
 	private Rectangle getImageBounds() {
 		int w = mapImage.getWidth(null);
 		int h = mapImage.getHeight(null);
@@ -649,6 +651,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		else if (this.destNode == null)
 			JOptionPane.showMessageDialog(null, "Please specify a destination node.", "Error", JOptionPane.WARNING_MESSAGE);
 		
+		
 		LinkedList<Node> path = new LinkedList<Node>();
 		path.add(startingNode);
 		path.add(destNode);
@@ -675,6 +678,101 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		this.shortestPath.clear();
 		this.shortestPath.addAll(actualPath);
 		repaint();
+	}
+	
+	public void drawStartingLoc(Graphics g)
+	{
+		double amountZoomedAsPercent = this.currentZoomAmount / this.maxZoomIn;
+	    System.out.println("amountZoomedAsPercent = " + amountZoomedAsPercent);
+	    int pathIncrement = 1;
+	    
+	    if (amountZoomedAsPercent <= 0.25)
+	    	pathIncrement = 5;
+	    if (amountZoomedAsPercent > 0.25 && amountZoomedAsPercent <= 0.5) 
+	    	pathIncrement = 4;
+	    if (amountZoomedAsPercent > 0.5 && amountZoomedAsPercent <= 0.9) 
+	    	pathIncrement = 3;
+	    if (amountZoomedAsPercent > 0.9)
+	    	pathIncrement = 1;
+	    
+	    int startDestTransparency = 255 - (int)(this.maxAlphaDecreaseForStartAndDest * amountZoomedAsPercent);
+		int ovalWidth = (int)(this.nodeVisualIndicationWidth * (1 / currentZoomAmount));
+		 // Clamp the value of ovalWidth between the pre-defined constraints.
+	    if (ovalWidth > maxNodeVisualWidth)
+	    	ovalWidth = maxNodeVisualWidth;
+	    else if (ovalWidth < minNodeVisualWidth)
+	    	ovalWidth = minNodeVisualWidth;
+	    
+	    int ovalRadius = ovalWidth / 2;
+        if (this.startingNode != null) {
+        	Color transparentGreen = new Color(10, 199, 41, startDestTransparency); 
+        	g.setColor(transparentGreen);
+        	//System.out.println("\n-=-=-=-=-=-= STARTING NODE =-=-=-=-=-=-");
+        	Point topLeft = nodeToImageCoordinates(this.startingNode.getPointFlipped());
+        	
+        	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
+        	// being where the user clicked).
+    		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius); 
+        	//System.out.println("Drawing oval for starting node at " + center.toString() + " with width " + ovalWidth);
+        	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
+        }
+        System.out.println("paint start");
+	}
+	
+	public void setStartingNode(int x, int y)
+	{
+		/*int rowLength = nodes[x].length;
+		int colLength = nodes.length;
+		System.out.println("row: "  + rowLength);
+		System.out.println("col: "  + colLength);*/
+		
+		startingNode = nodes[x][y];
+		System.out.println("starting node set");
+		drawStartingLoc(getGraphics());
+	}
+	
+	public void drawDestLoc(Graphics g)
+	{
+		double amountZoomedAsPercent = this.currentZoomAmount / this.maxZoomIn;
+	    System.out.println("amountZoomedAsPercent = " + amountZoomedAsPercent);
+	    int pathIncrement = 1;
+	    
+	    if (amountZoomedAsPercent <= 0.25)
+	    	pathIncrement = 5;
+	    if (amountZoomedAsPercent > 0.25 && amountZoomedAsPercent <= 0.5) 
+	    	pathIncrement = 4;
+	    if (amountZoomedAsPercent > 0.5 && amountZoomedAsPercent <= 0.9) 
+	    	pathIncrement = 3;
+	    if (amountZoomedAsPercent > 0.9)
+	    	pathIncrement = 1;
+	    
+	    int startDestTransparency = 255 - (int)(this.maxAlphaDecreaseForStartAndDest * amountZoomedAsPercent);
+		int ovalWidth = (int)(this.nodeVisualIndicationWidth * (1 / currentZoomAmount));
+		 // Clamp the value of ovalWidth between the pre-defined constraints.
+	    if (ovalWidth > maxNodeVisualWidth)
+	    	ovalWidth = maxNodeVisualWidth;
+	    else if (ovalWidth < minNodeVisualWidth)
+	    	ovalWidth = minNodeVisualWidth;
+	    
+	    int ovalRadius = ovalWidth / 2;
+		if (this.destNode != null) {
+        	Color transparentRed = new Color(199, 10, 10, startDestTransparency); 
+        	g.setColor(transparentRed);
+        	//System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
+        	Point topLeft = nodeToImageCoordinates(this.destNode.getPointFlipped());
+        	
+        	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
+        	// being where the user clicked).
+    		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius);         	
+        	//System.out.println("Drawing oval for destination node at " + center.toString() + " with width " + ovalWidth);
+        	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
+        }
+	}	
+	
+	public void setDestinationNode(int x, int y) 
+	{
+		destNode = nodes[x][y];
+		drawDestLoc(getGraphics());
 	}
 	
 	@Override
@@ -730,7 +828,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 					
 				}
 			}
-			
+		
 		}
 		
 		repaint();

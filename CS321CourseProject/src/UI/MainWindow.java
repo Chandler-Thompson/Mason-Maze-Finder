@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -15,6 +16,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
@@ -98,27 +101,44 @@ public class MainWindow {
 		frame.getContentPane().setLayout(gridBagLayout);
 		
 		// Create JPanels for the map and the control area.
-		JPanel controlPanel = new JPanel();
-		JPanel mapJPanel = new JPanel();
+
+		//JPanel controlPanel = new JPanel();
+		//JPanel mapJPanel = new JPanel();
 		
 		// We use a split pane to divide the UI into two separate sections: controls & map.
-		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapJPanel);
-		
-		splitPane.setDividerLocation(dividerLocation);
-		splitPane.setResizeWeight(resizeWeight);
+		//JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapJPanel);
+
+		//JPanel controlPanel = new JPanel();
+		//JPanel locationPanel = new JPanel();
+	    JPanel mapPanel = new JPanel();
+		//UserLocationPanel locationPanel = new UserLocationPanel(mapPanel,true);
+		// We use a split pane to divide the UI into two separate sections: controls & map.
+		//JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapPanel);
 		
 		ImageIcon mapIcon = new ImageIcon(this.displayImagePath);
 		JLabel mapImageLabel = new JLabel(mapIcon);
 		
 		mapImageLabel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		
-		mapJPanel.setLayout(new GridLayout(0, 1, 0, 0));
+		//mapJPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		mapPanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
+		/*mapPanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
 		mapPanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapJPanel.add(mapPanel);
-		mapPanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
+		mapPanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));*/
+		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
+		final MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
+		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
+		mapPanel.add(mapImagePanel);
+		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
+		mapImagePanel.setBackground(new Color(176, 224, 230));
+		UserLocationPanel locationPanel = new UserLocationPanel(mapImagePanel);
+		
+		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, locationPanel, mapPanel);	
+		splitPane.setDividerLocation(dividerLocation);
+		splitPane.setResizeWeight(resizeWeight);
+
 		splitPane.setOrientation(SwingConstants.VERTICAL);
 		splitPane.setBackground(Color.GREEN);
 		GridBagConstraints gbc_splitPane = new GridBagConstraints();
@@ -129,64 +149,98 @@ public class MainWindow {
 		gbc_splitPane.gridx = 0;
 		gbc_splitPane.gridy = 0;
 		frame.getContentPane().add(splitPane, gbc_splitPane);
+		
+		//locationPanel.setMapPanel(mapImagePanel);
+		
+		//userLocationMenuPanel.setPrefferedSize()
+		JButton setStartingPointButton = new JButton("Set Starting Point");
+		setStartingPointButton.setBackground(new Color(176, 224, 230));
+		setStartingPointButton.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		setStartingPointButton.setBounds(10, 576, 125, 23);
+		setStartingPointButton.setPreferredSize(new  Dimension (200,23));
 
-		setStartingPointButton = new JButton("Set Starting Point");
 		setStartingPointButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapPanel.setNextClickStart(true);
+				mapImagePanel.setNextClickStart(true);
 			}
 		});
-		
-		btnSetDestination = new JButton("Set Destination");
+		locationPanel.add(setStartingPointButton);
+
+		JButton btnSetDestination = new JButton("Set Destination");
+		btnSetDestination.setBackground(new Color(176, 224, 230));
+		btnSetDestination.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnSetDestination.setBounds(145, 576, 125, 23);
+		btnSetDestination.setPreferredSize(new  Dimension (200,23));
+
 		btnSetDestination.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapPanel.setNextClickDest(true);
+				mapImagePanel.setNextClickDest(true);
 			}
 		});		
-		
-		btnCalculatePath = new JButton("Calculate Path");
+		locationPanel.add(btnSetDestination);
+
+		JButton btnCalculatePath = new JButton("Calculate Path");
+		btnCalculatePath.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnCalculatePath.setBackground(new Color(176, 224, 230));
+		btnCalculatePath.setBounds(280, 576, 125, 23);
+
 		btnCalculatePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapPanel.generatePaths();
+				mapImagePanel.generatePaths();
 			}
 		});
+		locationPanel.add(btnCalculatePath);
 		
-		btnClearSetNodes = new JButton("Clear Path");
+		JButton btnClearSetNodes = new JButton("Clear Path");
+		btnClearSetNodes.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnClearSetNodes.setBackground(new Color(176, 224, 230));
+		btnClearSetNodes.setBounds(10, 633, 125, 23);
+
 		btnClearSetNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapPanel.clearPathNodes();
+				mapImagePanel.clearPathNodes();
 			}
 		});
+		locationPanel.add(btnClearSetNodes);
 		
-		btnSavePath = new JButton("Save Path");
+
+		JButton btnSavePath = new JButton("Save Path");
+		btnSavePath.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnSavePath.setBackground(new Color(176, 224, 230));
+		btnSavePath.setBounds(145, 633, 125, 23);
+
 		btnSavePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapPanel.savePath();
+				mapImagePanel.savePath();
 			}
 		});
+		locationPanel.add(btnSavePath);
 		
-		btnClearSelectedNodes = new JButton("Clear Selection");
+
+		JButton btnClearSelectedNodes = new JButton("Clear Selection");
+		btnClearSelectedNodes.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnClearSelectedNodes.setBackground(new Color(176, 224, 230));
+		btnClearSelectedNodes.setBounds(280, 633, 125, 23);
+
 		btnClearSelectedNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapPanel.clearSelection();
+				mapImagePanel.clearSelection();
 			}
 		});
-		
-		btnTakeScreenshot = new JButton("Take Screenshot");
+		locationPanel.add(btnClearSelectedNodes);
+
+		JButton btnTakeScreenshot = new JButton("Take Screenshot");
+		btnTakeScreenshot.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnTakeScreenshot.setBackground(new Color(176, 224, 230));
+		btnTakeScreenshot.setBounds(145, 519, 125, 23);
+
 		btnTakeScreenshot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				mapPanel.takeScreenshot();
+				mapImagePanel.takeScreenshot();
 			}
 		});
+		locationPanel.add(btnTakeScreenshot);
 		
-		controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		controlPanel.add(setStartingPointButton);
-		controlPanel.add(btnSetDestination);
-		controlPanel.add(btnCalculatePath);
-		controlPanel.add(btnClearSetNodes);
-		controlPanel.add(btnSavePath);
-		controlPanel.add(btnClearSelectedNodes);
-		controlPanel.add(btnTakeScreenshot);
 
 	}
 	
@@ -225,5 +279,4 @@ public class MainWindow {
 	public MapPanel getMapPanel() {
 		return this.mapPanel;
 	}
-
 }
