@@ -605,9 +605,10 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         			continue;
         		}
         		draw++;
-        		Point center = nodeToImageCoordinates(node.getPointFlipped());
-        		int downShift = (int)(nodeDownTranslate * (1 / this.currentZoomAmount));
-        		g.fillOval(center.x, center.y + downShift, selectionWidth, selectionWidth);
+        		// We pass '5' as the downshift instead of using the default '10' as '5' just looks better for this, based on trial and error.
+        		Point center = nodeToImageCoordinates(node.getPointFlipped(), true, 5); 
+        		//int downShift = (int)(nodeDownTranslate * (1 / this.currentZoomAmount));
+        		g.fillOval(center.x, center.y, selectionWidth, selectionWidth);
         	}
     	}
         
@@ -868,7 +869,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	
 	/**
 	 * Given the indices of a node in the 2D Node[][] nodes array, return the corresponding image coordinates.
-	 * @param p
+	 * 
+	 * If 'applyDownshift' is true, then we shift the point down slightly. This is to account for the fact that, when we scale the grid of nodes across the higher-resolution
+	 * display image, it doesn't scale perfectly. The nodes are essentially a little higher than they're supposed to be. So when we draw them, we want to paint them lower.
+	 * We only really do this for path nodes though, not for starting/destination nodes. We want starting and destination nodes to appear exactly where the user clicks, and
+	 * down-shifting them would mess up this behavior. 
 	 * @return
 	 */
 	public Point nodeToImageCoordinates(Point p, boolean applyDownshift, int downShift) {
