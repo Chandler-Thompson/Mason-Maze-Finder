@@ -8,6 +8,7 @@ import javax.swing.JMenu;
 import java.awt.Font;
 import java.awt.Color;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
 import javax.swing.JList;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
@@ -31,6 +32,8 @@ import Map.Node;
 public class UserLocationPanel extends JPanel {
 	
 	private JPanel mapPanel;
+	
+	private JButton btnAquiaNeighbor;
 	
 	public UserLocationPanel(final MapPanel mapPanel) {
 		setBackground(new Color(176, 224, 230));
@@ -647,21 +650,48 @@ public class UserLocationPanel extends JPanel {
 			}
 		});
 		
-		JButton whitetop = new JButton("Whitetop");
+		JMenuItem whitetop = new JMenuItem("Whitetop");
 		whitetop.setBackground(new Color(176, 224, 230));
 		whitetop.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
 		whitetop.setBounds(26, 195, 79, 23);
 		whitetop.setBorder(null);
+		whitetop.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e){
+				System.out.println("Clicked whitetop");
+				int x = 194;
+				int y = 1078;
+				boolean startLocStatus = false;
+				if(mapPanel.getStartingNode()==null)
+				{
+					startLocStatus = true;
+				}
+				setNode(startLocStatus,x,y);
+			}
+		});			
 		
 		
-		JButton rogers = new JButton("Rogers");
+		JMenuItem rogers = new JMenuItem("Rogers");
 		rogers.setBackground(new Color(176, 224, 230));
 		rogers.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
 		rogers.setBounds(26, 195, 79, 23);
 		rogers.setBorder(null);
+		rogers.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				System.out.println("Clicked rogers");
+				int x = 136;
+				int y = 1085;
+				boolean startLocStatus = false;
+				if(mapPanel.getStartingNode()==null)
+				{
+					startLocStatus = true;
+				}
+				setNode(startLocStatus,x,y);
+			}
+		});			
 		
 		
-		final JButton btnAquiaNeighbor = new JButton("Aquia Neighborhood");
+		btnAquiaNeighbor = new JButton("Aquia Neighborhood");
 		final JPopupMenu aquiaMenu = new JPopupMenu("aquia");
 		btnAquiaNeighbor.setBackground(new Color(176, 224, 230));
 		btnAquiaNeighbor.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
@@ -676,9 +706,13 @@ public class UserLocationPanel extends JPanel {
 		aquiaMenu.add(rogers);
 		
 		
+		
 		btnAquiaNeighbor.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 aquiaMenu.show(btnAquiaNeighbor,0, 0);
+				// For some reason, I had to use the UserLocationPanel as the Component parameter
+				// and hard-code the X and Y (I had to hardcode the X and Y to position the popup menu correctly, that's not
+				// the weird part. The weird part is that I had to use UserLocationPanel).
+				aquiaMenu.show(UserLocationPanel.this, 30 , 195);
 			}
 		});
 
@@ -689,6 +723,19 @@ public class UserLocationPanel extends JPanel {
 		btnCommons.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
 		btnCommons.setBounds(26, 195, 79, 23);
 		btnCommons.setBorder(null);
+		
+		btnCommons.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				int x = 316;
+				int y = 1460;
+				boolean startLocStatus = false;
+				if(mapPanel.getStartingNode()==null)
+				{
+					startLocStatus = true;
+				}
+				setNode(startLocStatus,x,y);
+			}
+		});		
 		//add(btnCommons);
 		
 		JButton btnPresPark = new JButton("Presdent's Park");
@@ -696,6 +743,19 @@ public class UserLocationPanel extends JPanel {
 		btnPresPark.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
 		btnPresPark.setBounds(26, 195, 79, 23);
 		btnPresPark.setBorder(null);
+
+		btnPresPark.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				int x = 551;
+				int y = 1636;
+				boolean startLocStatus = false;
+				if(mapPanel.getStartingNode()==null)
+				{
+					startLocStatus = true;
+				}
+				setNode(startLocStatus,x,y);
+			}
+		});
 		//add(btnPresPark);
 		
 		JButton btnShenNeighbor = new JButton("Shenandoah Neighborhood");
@@ -703,6 +763,18 @@ public class UserLocationPanel extends JPanel {
 		btnShenNeighbor.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
 		btnShenNeighbor.setBounds(26, 195, 79, 23);
 		btnShenNeighbor.setBorder(null);
+		btnShenNeighbor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				int x = 638;
+				int y = 1580;
+				boolean startLocStatus = false;
+				if(mapPanel.getStartingNode()==null)
+				{
+					startLocStatus = true;
+				}
+				setNode(startLocStatus,x,y);
+			}
+		});		
 		//add(btnShanNeighbor);
 		
 		JButton btnRappNeighbor = new JButton("Rappahannock Neighborhood");
@@ -710,6 +782,19 @@ public class UserLocationPanel extends JPanel {
 		btnRappNeighbor.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
 		btnRappNeighbor.setBounds(26, 195, 79, 23);
 		btnRappNeighbor.setBorder(null);
+		
+		btnRappNeighbor.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e){
+				int x = 313;
+				int y = 1381;
+				boolean startLocStatus = false;
+				if(mapPanel.getStartingNode()==null)
+				{
+					startLocStatus = true;
+				}
+				setNode(startLocStatus,x,y);
+			}
+		});			
 		//add(btnRappNeighbor);
 		
 		final JButton btnRes = new JButton("Residence");
@@ -791,7 +876,11 @@ public class UserLocationPanel extends JPanel {
 		add(btnClearSelection); */
 	}
 	
-	void setNode(boolean startLocRequired, int x, int y)
+	private JButton getBtnAquiaNeighbor() {
+		return this.btnAquiaNeighbor;
+	}
+	
+	private void setNode(boolean startLocRequired, int x, int y)
 	{
 		if(startLocRequired)
 		{
