@@ -337,7 +337,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		System.out.println("Generating grid of nodes using image...");
 		BufferedImage bufferedMapImage = ImageIO.read(new File(this.nodesImagePath));
 		//BufferedImage bufferedMapImage = ImageIO.read(MapPanel.class.getResource("C:\\Users\\Benjamin\\Documents\\School\\Fall 2019\\CS 321\\CS321\\CS321CourseProject\\src\\Res\\CampusMapForNodes.png"));
-		 byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
+		byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
+		bufferedMapImage.getType();
 		
 		final int width = bufferedMapImage.getWidth();
         final int height = bufferedMapImage.getHeight();
@@ -357,7 +358,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
     		argbValue += ((int) pixels[pixel] & 0xff); // blue
             argbValue += (((int) pixels[pixel + 1] & 0xff) << 8); // green
             argbValue += (((int) pixels[pixel + 2] & 0xff) << 16); // red
-            boolean valid = (argbValue != -16777216);
+            boolean valid = (argbValue >= -8777216);
             if (valid)
             	numberOfValidNodes = numberOfValidNodes + 1;
 			Node nextNode = new Node(nodeID, "Node " + nodeID++, valid, row, col, 
@@ -558,6 +559,14 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	Color transparentBlue = new Color(66, 87, 245, pathTransparency);
         	g.setColor(transparentBlue);        
         	
+        	// We don't downshift the first 5% of the path nodes or the last 5%.
+        	// We do not downshift start/ending nodes, so by not down shifting we sort of connect the two.
+        	int lower1 = (int)(shortestPath.size() * 0.02);
+        	int upper1 = (int)(shortestPath.size() * 0.98);
+        	
+        	int lower2 = (int)(shortestPath.size() * 0.4);
+        	int upper2 = (int)(shortestPath.size() * 0.96);
+        	
         	// Iterate over all of the nodes in the shortest path and display them.
         	// We increment i by a value dependent on how zoomed-in we are. If we're
         	// very zoomed-in, then we'd like to display more of the nodes in the path.
@@ -567,7 +576,23 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         		
         		Point topLeft = null;
         		
-        		topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true);
+        		// We vary the downshift amount depending on where in the past the nodes are.
+        		// Nodes near the very start or very end are downshifted LESS than nodes in the middle of the path.
+        		if (i <= lower1) {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), false);
+        		}	
+        		else if (i > lower1 && i <= lower2) {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true, 5);
+        		}
+        		else if (i > lower2 && i <= upper2) {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true, 10);
+        		}
+        		else if (i > upper2 && i <= upper1) {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true, 5);
+        		}
+        		else {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), false);
+        		}
         		
     			Point center = new Point(topLeft.x - pathOvalRadius, topLeft.y - pathOvalRadius); 
         		
@@ -597,14 +622,14 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
     		int draw = 0;
     		//draw over only valid selected nodes
         	for(Node node : selectedNodes) {
-        		if (draw++ != 0) {
+        		/*if (draw++ != 0) {
         			if (draw >= 5)
         			{
         				draw = 0;
         			}
         			continue;
         		}
-        		draw++;
+        		draw++;*/
         		// We pass '5' as the downshift instead of using the default '10' as '5' just looks better for this, based on trial and error.
         		Point center = nodeToImageCoordinates(node.getPointFlipped(), true, 5); 
         		//int downShift = (int)(nodeDownTranslate * (1 / this.currentZoomAmount));

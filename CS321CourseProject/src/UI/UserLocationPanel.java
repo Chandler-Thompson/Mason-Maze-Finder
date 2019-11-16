@@ -400,7 +400,7 @@ public class UserLocationPanel extends JPanel {
 		ikes.setBorder(null);
 		ikes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
-				int x = 570;
+				int x = 560;
 				int y = 1602;
 				boolean startLocStatus = false;
 				if(mapPanel.getStartingNode()==null)
