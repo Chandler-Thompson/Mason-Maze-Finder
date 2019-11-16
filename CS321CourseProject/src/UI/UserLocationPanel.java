@@ -606,10 +606,10 @@ public class UserLocationPanel extends JPanel {
 		});
 		rappDeck.setBorder(null);
 		
-		JButton shanDeck = new JButton("Shanondoah Parking Deck");
-		shanDeck.setFont(new Font("Yu Gothic", Font.PLAIN, 11));
-		shanDeck.setBackground(new Color(176, 224, 230));
-		shanDeck.addActionListener(new ActionListener() {
+		JButton shenDeck = new JButton("Shenandoah Parking Deck");
+		shenDeck.setFont(new Font("Yu Gothic", Font.PLAIN, 11));
+		shenDeck.setBackground(new Color(176, 224, 230));
+		shenDeck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e){
 				int x = 563;
 				int y = 1488;
@@ -621,7 +621,7 @@ public class UserLocationPanel extends JPanel {
 				setNode(startLocStatus,x,y);
 			}
 		});
-		shanDeck.setBorder(null);
+		shenDeck.setBorder(null);
 		
 		final JButton btnParking = new JButton("Parking");
 		final JPopupMenu parkingMenu = new JPopupMenu("parking");
@@ -640,7 +640,7 @@ public class UserLocationPanel extends JPanel {
 		parkingMenu.add(lotL);
 		parkingMenu.add(lotC);
 		parkingMenu.add(rappDeck);
-		parkingMenu.add(shanDeck);
+		parkingMenu.add(shenDeck);
 		btnParking.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parkingMenu.show(btnParking,0,0);
@@ -698,11 +698,11 @@ public class UserLocationPanel extends JPanel {
 		btnPresPark.setBorder(null);
 		//add(btnPresPark);
 		
-		JButton btnShanNeighbor = new JButton("Shanondoah Neighborhood");
-		btnShanNeighbor.setBackground(new Color(176, 224, 230));
-		btnShanNeighbor.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
-		btnShanNeighbor.setBounds(26, 195, 79, 23);
-		btnShanNeighbor.setBorder(null);
+		JButton btnShenNeighbor = new JButton("Shenandoah Neighborhood");
+		btnShenNeighbor.setBackground(new Color(176, 224, 230));
+		btnShenNeighbor.setFont(new Font("Yu Gothic", Font.PLAIN, 13));
+		btnShenNeighbor.setBounds(26, 195, 79, 23);
+		btnShenNeighbor.setBorder(null);
 		//add(btnShanNeighbor);
 		
 		JButton btnRappNeighbor = new JButton("Rappahannock Neighborhood");
@@ -728,7 +728,7 @@ public class UserLocationPanel extends JPanel {
 		residenceMenu.add(btnAquiaNeighbor);
 		residenceMenu.add(btnPresPark);
 		residenceMenu.add(btnRappNeighbor);
-		residenceMenu.add(btnShanNeighbor);
+		residenceMenu.add(btnShenNeighbor);
 		residenceMenu.add(btnCommons);
 		
 		btnRes.addActionListener(new ActionListener() {

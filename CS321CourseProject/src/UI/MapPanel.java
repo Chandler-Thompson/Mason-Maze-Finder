@@ -729,7 +729,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		
 		startingNode = nodes[x][y];
 		System.out.println("starting node set");
-		drawStartingLoc(getGraphics());
+		// If we click buildings multiple times in a row without doing anything that triggers a repaint(), then we can 
+		// end up painting multiple red/green dots using this method. Repaint() ensures the old circles don't get redrawn after 
+		// we update the value of the starting/destination node.		
+		repaint();
+		//drawStartingLoc(getGraphics());
 	}
 	
 	public void drawDestLoc(Graphics g)
@@ -773,7 +777,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	public void setDestinationNode(int x, int y) 
 	{
 		destNode = nodes[x][y];
-		drawDestLoc(getGraphics());
+		repaint();
+		// If we click buildings multiple times in a row without doing anything that triggers a repaint(), then we can 
+		// end up painting multiple red/green dots using this method. Repaint() ensures the old circles don't get redrawn after 
+		// we update the value of the starting/destination node.
+		//drawDestLoc(getGraphics());
 	}
 	
 	@Override
