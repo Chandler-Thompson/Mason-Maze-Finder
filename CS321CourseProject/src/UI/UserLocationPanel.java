@@ -137,8 +137,8 @@ public class UserLocationPanel extends JPanel {
 		engineering.setBorder(null);
 		engineering.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				int x = 662;
-				int y = 1447;
+				int x = 658;
+				int y = 1445;
 				boolean startLocStatus = false;
 				if(mapPanel.getStartingNode()==null)
 				{
