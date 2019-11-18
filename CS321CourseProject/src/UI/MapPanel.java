@@ -3,17 +3,22 @@ package UI;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.MouseInfo;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferUShort;
 import java.awt.image.DataBufferByte;
 import java.io.File;
 import java.io.FileInputStream;
@@ -21,18 +26,22 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import Map.EdgelessNode;
 import Map.Node;
+import Map.QueueNode;
 import Map.Terrain;
 import Pathfinding.ShortestPathAlgorithm;
 
@@ -646,6 +655,30 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         System.out.println("Translate Y: " + translateY);		
 	}
 	
+	public void setNextClickStart(boolean newValue) {
+		this.nextClickSetsStart = newValue;
+		
+		if (newValue == true) {
+			nextClickSetsDest = false;
+		}
+	}
+	
+	public void setNextClickDest(boolean newValue) {
+		this.nextClickSetsDest = newValue;
+		
+		if (newValue == true) {
+			nextClickSetsStart = false;
+		}
+	}
+	
+	public void clearSelectedNodes() {
+		this.startingNode = null;
+		this.destNode = null;
+		shortestPath.clear();
+		
+		repaint();
+	}
+
 	public void generatePaths() {
 		
 		if (this.startingNode == null && this.destNode == null) 

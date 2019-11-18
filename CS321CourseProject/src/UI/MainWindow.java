@@ -19,11 +19,43 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+import java.awt.GridLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.event.MouseWheelEvent;
+import java.awt.geom.AffineTransform;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.awt.Color;
+import java.awt.Dimension;
+import javax.swing.JViewport;
+import javax.swing.JScrollPane;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
+import javax.swing.BoxLayout;
+import java.awt.CardLayout;
+import com.jgoodies.forms.layout.FormLayout;
+import com.jgoodies.forms.layout.ColumnSpec;
+import com.jgoodies.forms.layout.RowSpec;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.FlowLayout;
+
 import User.Profile;
 
 public class MainWindow {
 
 	private MainFrame frame;
+	
+	private BufferedImage mapImage;
 	
 	private static final int width = 1280;
 	private static final int height = 720;
@@ -47,7 +79,7 @@ public class MainWindow {
 					MainWindow window = new MainWindow(regularCampusMapPath, campusMapForNodesJpgPath);
 					window.frame.setVisible(true);
 				} catch (Exception e) {
-					e.printStackTrace()	;
+					e.printStackTrace();
 				}
 			}
 		});
@@ -97,6 +129,23 @@ public class MainWindow {
 		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
 		MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
+
+		
+		JScrollPane scrollPane = new JScrollPane(mapImageLabel) {	
+			/*@Override
+		    protected void processMouseWheelEvent(MouseWheelEvent e) {
+				if (frame.getControlPressed()) 
+					System.out.println("Yeet");
+		        super.processMouseWheelEvent(e);
+		    }*/
+		};
+		
+		scrollPane.getVerticalScrollBar().setUnitIncrement(12);
+		scrollPane.getHorizontalScrollBar().setUnitIncrement(12);
+		
+		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
+
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapPanel.add(mapImagePanel);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
