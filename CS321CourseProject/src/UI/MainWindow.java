@@ -96,7 +96,7 @@ public class MainWindow {
 		
 		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
 		
-		MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
+		final MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapPanel.add(mapImagePanel);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
