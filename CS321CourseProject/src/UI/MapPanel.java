@@ -64,6 +64,18 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	 */
 	private final int nodeVisualIndicationWidth = 13;
 	
+	/**
+	 * Scaling the nodes across the larger image (that is displayed to the user) results in the nodes being
+	 * slightly too high when displayed. Therefore we apply a semi-hard-coded translation downwards to nodes. 
+	 * It is semi-hard-coded in that it changes depending on the current zoom.
+	 */
+	private final int nodeDownTranslate = 10;
+	
+	// For selection
+	private final int selectionVisualWidth = 7; 
+	private final int maxSelectionVisualWidth = 9;
+	private final int minSelectionVisualWidth = 7;
+	
 	// These are for start and destination nodes.
 	private final int maxNodeVisualWidth = 20;
 	private final int minNodeVisualWidth = 12;
@@ -365,7 +377,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		System.out.println("Generating grid of nodes using image...");
 		BufferedImage bufferedMapImage = ImageIO.read(new File(this.nodesImagePath));
 		//BufferedImage bufferedMapImage = ImageIO.read(MapPanel.class.getResource("C:\\Users\\Benjamin\\Documents\\School\\Fall 2019\\CS 321\\CS321\\CS321CourseProject\\src\\Res\\CampusMapForNodes.png"));
-		 byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
+		byte[] pixels = ((DataBufferByte)bufferedMapImage.getRaster().getDataBuffer()).getData();
+		bufferedMapImage.getType();
 		
 		final int width = bufferedMapImage.getWidth();
         final int height = bufferedMapImage.getHeight();
@@ -385,8 +398,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
     		argbValue += ((int) pixels[pixel] & 0xff); // blue
             argbValue += (((int) pixels[pixel + 1] & 0xff) << 8); // green
             argbValue += (((int) pixels[pixel + 2] & 0xff) << 16); // red
-            boolean valid = (argbValue != -16777216);
-            
+            boolean valid = (argbValue >= -8777216);
             if (valid)
             	numberOfValidNodes = numberOfValidNodes + 1;
             
@@ -557,6 +569,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
         	// being where the user clicked).
     		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius); 
+    		
         	//System.out.println("Drawing oval for starting node at " + center.toString() + " with width " + ovalWidth);
         	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
@@ -567,10 +580,13 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	//System.out.println("\n-=-=-=-=-=-= DESTINATION NODE =-=-=-=-=-=-");
         	Point topLeft = nodeToImageCoordinates(this.destNode.getPointFlipped());
         	
+        	int downShift = (int)(nodeDownTranslate * (1 / this.currentZoomAmount));
+        	
         	// Adjust so the oval is centered where the user clicks (instead of the top-left of the oval
         	// being where the user clicked).
     		Point center = new Point(topLeft.x - ovalRadius, topLeft.y - ovalRadius);         	
         	//System.out.println("Drawing oval for destination node at " + center.toString() + " with width " + ovalWidth);
+
         	g.fillOval((int)(center.x), (int)(center.y), ovalWidth, ovalWidth);
         }
         
@@ -587,15 +603,43 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	Color transparentBlue = new Color(66, 87, 245, pathTransparency);
         	g.setColor(transparentBlue);        
         	
+        	// We don't downshift the first 5% of the path nodes or the last 5%.
+        	// We do not downshift start/ending nodes, so by not down shifting we sort of connect the two.
+        	int lower1 = (int)(shortestPath.size() * 0.02);
+        	int upper1 = (int)(shortestPath.size() * 0.98);
+        	
+        	int lower2 = (int)(shortestPath.size() * 0.4);
+        	int upper2 = (int)(shortestPath.size() * 0.96);
+        	
         	// Iterate over all of the nodes in the shortest path and display them.
         	// We increment i by a value dependent on how zoomed-in we are. If we're
         	// very zoomed-in, then we'd like to display more of the nodes in the path.
         	// If we're zoomed out, it isn't so important to display each and every node.
         	for (int i = 0; i < shortestPath.size(); i += pathIncrement) {
         		Node cur = shortestPath.get(i);
-        		Point topLeft = nodeToImageCoordinates(cur.getPointFlipped());
         		
-        		Point center = new Point(topLeft.x - pathOvalRadius, topLeft.y - pathOvalRadius); 
+        		Point topLeft = null;
+        		
+        		// We vary the downshift amount depending on where in the past the nodes are.
+        		// Nodes near the very start or very end are downshifted LESS than nodes in the middle of the path.
+        		if (i <= lower1) {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), false);
+        		}	
+        		else if (i > lower1 && i <= lower2) {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true, 5);
+        		}
+        		else if (i > lower2 && i <= upper2) {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true, 10);
+        		}
+        		else if (i > upper2 && i <= upper1) {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), true, 5);
+        		}
+        		else {
+        			topLeft = nodeToImageCoordinates(cur.getPointFlipped(), false);
+        		}
+        		
+    			Point center = new Point(topLeft.x - pathOvalRadius, topLeft.y - pathOvalRadius); 
+        		
         		g.fillOval((int)(center.x), (int)(center.y), pathOvalWidth, pathOvalWidth);
         	}        	
         }
@@ -607,24 +651,35 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         	
         	HashSet<Node> selectedNodes = clickAndDragSelection.getNodes();
         
-        	int nodeRectWidth = (int)(this.pathNodeVisualWidth * (1 / currentZoomAmount));
+        	int selectionWidth = (int)(this.selectionVisualWidth * (1 / currentZoomAmount));
     	    // Clamp the value of rectWidth between the pre-defined constraints.
-    	    if (nodeRectWidth > maxPathNodeVisualWidth)
-    	    	nodeRectWidth = maxPathNodeVisualWidth;
-    	    else if (nodeRectWidth < minPathNodeVisualWidth)
-    	    	nodeRectWidth = minPathNodeVisualWidth;
+    	    if (selectionWidth > this.maxSelectionVisualWidth)
+    	    	selectionWidth = maxSelectionVisualWidth;
+    	    else if (selectionWidth < this.minSelectionVisualWidth)
+    	    	selectionWidth = minSelectionVisualWidth;
         	
         	//set color of selected nodes
     		Color transparentGreen = new Color(66, 245, 87, pathTransparency);
     		g.setColor(transparentGreen);
         	
+    		// draw every other
+    		int draw = 0;
     		//draw over only valid selected nodes
         	for(Node node : selectedNodes) {
-        		Point center = nodeToImageCoordinates(node.getPointFlipped());
-        		g.fillRect(center.x, center.y, nodeRectWidth, nodeRectWidth);
+        		/*if (draw++ != 0) {
+        			if (draw >= 5)
+        			{
+        				draw = 0;
+        			}
+        			continue;
+        		}
+        		draw++;*/
+        		// We pass '5' as the downshift instead of using the default '10' as '5' just looks better for this, based on trial and error.
+        		Point center = nodeToImageCoordinates(node.getPointFlipped(), true, 5); 
+        		//int downShift = (int)(nodeDownTranslate * (1 / this.currentZoomAmount));
+        		g.fillOval(center.x, center.y, selectionWidth, selectionWidth);
         	}
-        	
-        }
+    	}
         
 	}
 	
@@ -712,8 +767,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			actualPath.add(n);
 		}
 		// Remove the first and last elements, which will be the destination and the start, respectively.
-		actualPath.removeFirst();
-		actualPath.removeLast();
+		// actualPath.removeFirst();
+		// actualPath.removeLast();
 		this.shortestPath.clear();
 		this.shortestPath.addAll(actualPath);
 		repaint();
@@ -758,11 +813,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         System.out.println("paint start");
 	}
 	
-	public Node getStartingNode()
-	{
-		return startingNode;
-	}
-	
 	public void setStartingNode(int x, int y)
 	{
 		/*int rowLength = nodes[x].length;
@@ -772,7 +822,11 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		
 		startingNode = nodes[x][y];
 		System.out.println("starting node set");
-		drawStartingLoc(getGraphics());
+		// If we click buildings multiple times in a row without doing anything that triggers a repaint(), then we can 
+		// end up painting multiple red/green dots using this method. Repaint() ensures the old circles don't get redrawn after 
+		// we update the value of the starting/destination node.		
+		repaint();
+		//drawStartingLoc(getGraphics());
 	}
 	
 	public void drawDestLoc(Graphics g)
@@ -813,15 +867,14 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         }
 	}	
 	
-	public Node getDestinationNode() 
-	{
-		return destNode;
-	}
-	
 	public void setDestinationNode(int x, int y) 
 	{
 		destNode = nodes[x][y];
-		drawDestLoc(getGraphics());
+		repaint();
+		// If we click buildings multiple times in a row without doing anything that triggers a repaint(), then we can 
+		// end up painting multiple red/green dots using this method. Repaint() ensures the old circles don't get redrawn after 
+		// we update the value of the starting/destination node.
+		//drawDestLoc(getGraphics());
 	}
 	
 	@Override
@@ -841,9 +894,8 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 			translateY = currentPoint.y - mouseDragStart.y;
 			
 			shouldTranslate = true;
-			
-		}else if(isSelecting) {//RIGHT MOUSE BUTTON IS HELD (CREATE SELECTION)
-			
+		}
+		else if (isSelecting) {//RIGHT MOUSE BUTTON IS HELD (CREATE SELECTION)	
 			System.out.println("Selecting...");
 			
 			Point startNodeCoords = panelToNodeCoordinates(mouseSelectionStart);//beginning node point of selection
@@ -908,12 +960,24 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		return adjusted;	
 	}
 	
+	public Point nodeToImageCoordinates(Point p) {
+		return this.nodeToImageCoordinates(p, false);
+	}
+	
+	public Point nodeToImageCoordinates(Point p, boolean applyDownshift) {
+		return this.nodeToImageCoordinates(p, applyDownshift, 10);
+	}
+	
 	/**
 	 * Given the indices of a node in the 2D Node[][] nodes array, return the corresponding image coordinates.
-	 * @param p
+	 * 
+	 * If 'applyDownshift' is true, then we shift the point down slightly. This is to account for the fact that, when we scale the grid of nodes across the higher-resolution
+	 * display image, it doesn't scale perfectly. The nodes are essentially a little higher than they're supposed to be. So when we draw them, we want to paint them lower.
+	 * We only really do this for path nodes though, not for starting/destination nodes. We want starting and destination nodes to appear exactly where the user clicks, and
+	 * down-shifting them would mess up this behavior. 
 	 * @return
 	 */
-	public Point nodeToImageCoordinates(Point p) {
+	public Point nodeToImageCoordinates(Point p, boolean applyDownshift, int downShift) {
 		double ratioX = imageBounds.getWidth() / mapImage.getWidth(null);
 		//System.out.println("\nimageBounds.getWidth() / mapImage.getWidth(null) = " + imageBounds.getWidth() + "/" + mapImage.getWidth(null) + " = " + ratioX);
 		double ratioY = imageBounds.getHeight() / mapImage.getHeight(null);
@@ -931,6 +995,12 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		y = (int)(y * ratioY);
 		//System.out.println("y += this.drawImageY --> " + y + " += " + this.drawImageY + " --> " + ((int)(y + drawImageY)));
 		y += this.drawImageY;
+		
+		if (applyDownshift) {
+			downShift = (int)(downShift / scaleX);
+			downShift = (int)(downShift * ratioX);
+			y += downShift;
+		}
 		
 		return new Point(x,y);
 	}
@@ -1064,7 +1134,9 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		shortestPath.clear();
 		
 		//TODO: remove this when no longer needed
-		parent.getProfile().getSavedPaths().remove(0);
+		ArrayList<ArrayList<Node>> savedPaths = parent.getProfile().getSavedPaths(); 
+		if (savedPaths.size() > 0)
+			savedPaths.remove(0);
 		parent.getProfile().saveProfile();
 		
 		repaint();
@@ -1114,6 +1186,26 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 		parent.getProfile().saveProfile();
 		
 		repaint();
+	}
+	
+	public void setStartingNode(Node n) {
+		this.startingNode = n;
+	}
+	
+	public void setDestinationNode(Node n) {
+		this.destNode = n;
+	}
+	
+	public Node getStartingNode() {
+		return this.startingNode;
+	}
+	
+	public Node getDestinationNode() {
+		return this.destNode;
+	}
+	
+	public ArrayList<Node> getShortestPath() {
+		return this.shortestPath;
 	}
 	
 	public Node[][] getGraph()
