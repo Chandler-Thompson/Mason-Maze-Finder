@@ -3,6 +3,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -15,6 +16,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 import javax.swing.SwingConstants;
@@ -112,17 +115,17 @@ public class MainWindow {
 		frame.getContentPane().setLayout(gridBagLayout);
 		
 		// Create JPanels for the map and the control area.
-		JPanel controlPanel = new JPanel();
+		//JPanel controlPanel = new JPanel(); !!!!!!!!
 		JPanel mapPanel = new JPanel();
 		
 		// We use a split pane to divide the UI into two separate sections: controls & map.
-		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapPanel);
+		//JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, controlPanel, mapPanel); !!!!!!!!
 		
 		splitPane.setDividerLocation(dividerLocation);
 		splitPane.setResizeWeight(resizeWeight);
 		
 		ImageIcon mapIcon = new ImageIcon(this.displayImagePath);
-		JLabel mapImageLabel = new JLabel(mapIcon);
+		final JLabel mapImageLabel = new JLabel(mapIcon);
 		
 		mapImageLabel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		
@@ -149,6 +152,14 @@ public class MainWindow {
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapPanel.add(mapImagePanel);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
+
+		mapImagePanel.setBackground(new Color(176, 224, 230));
+		UserLocationPanel locationPanel = new UserLocationPanel(mapImagePanel);
+		
+		JSplitPane splitPane = new JSplitPane(SwingConstants.VERTICAL, locationPanel, mapPanel);	
+		splitPane.setDividerLocation(dividerLocation);
+		splitPane.setResizeWeight(resizeWeight);
+
 		splitPane.setOrientation(SwingConstants.VERTICAL);
 		splitPane.setBackground(Color.GREEN);
 		GridBagConstraints gbc_splitPane = new GridBagConstraints();
@@ -161,6 +172,10 @@ public class MainWindow {
 		frame.getContentPane().add(splitPane, gbc_splitPane);
 
 		JButton setStartingPointButton = new JButton("Set Starting Point");
+		setStartingPointButton.setBackground(new Color(176, 224, 230));
+		setStartingPointButton.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		setStartingPointButton.setBounds(10, 576, 125, 23);
+		setStartingPointButton.setPreferredSize(new  Dimension (200,23));
 		setStartingPointButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.setNextClickStart(true);
@@ -168,6 +183,10 @@ public class MainWindow {
 		});
 		
 		JButton btnSetDestination = new JButton("Set Destination");
+		btnSetDestination.setBackground(new Color(176, 224, 230));
+		btnSetDestination.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnSetDestination.setBounds(145, 576, 125, 23);
+		btnSetDestination.setPreferredSize(new  Dimension (200,23));
 		btnSetDestination.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.setNextClickDest(true);
@@ -175,6 +194,9 @@ public class MainWindow {
 		});		
 		
 		JButton btnCalculatePath = new JButton("Calculate Path");
+		btnCalculatePath.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnCalculatePath.setBackground(new Color(176, 224, 230));
+		btnCalculatePath.setBounds(280, 576, 125, 23);
 		btnCalculatePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.generatePaths();
@@ -182,6 +204,9 @@ public class MainWindow {
 		});
 		
 		JButton btnClearSetNodes = new JButton("Clear Path");
+		btnClearSetNodes.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnClearSetNodes.setBackground(new Color(176, 224, 230));
+		btnClearSetNodes.setBounds(10, 633, 125, 23);
 		btnClearSetNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.clearPathNodes();
@@ -189,6 +214,9 @@ public class MainWindow {
 		});
 		
 		JButton btnSavePath = new JButton("Save Path");
+		btnSavePath.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnSavePath.setBackground(new Color(176, 224, 230));
+		btnSavePath.setBounds(145, 633, 125, 23);
 		btnSavePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.savePath();
@@ -203,6 +231,9 @@ public class MainWindow {
 		});
 		
 		JButton btnClearSelectedNodes = new JButton("Clear Selection");
+		btnClearSelectedNodes.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnClearSelectedNodes.setBackground(new Color(176, 224, 230));
+		btnClearSelectedNodes.setBounds(280, 633, 125, 23);
 		btnClearSelectedNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.clearSelection();
@@ -210,21 +241,24 @@ public class MainWindow {
 		});
 		
 		JButton btnTakeScreenshot = new JButton("Take Screenshot");
+		btnTakeScreenshot.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnTakeScreenshot.setBackground(new Color(176, 224, 230));
+		btnTakeScreenshot.setBounds(145, 519, 125, 23);
 		btnTakeScreenshot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.takeScreenshot();
 			}
 		});
 		
-		controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		controlPanel.add(setStartingPointButton);
-		controlPanel.add(btnSetDestination);
-		controlPanel.add(btnCalculatePath);
-		controlPanel.add(btnClearSetNodes);
-		controlPanel.add(btnSavePath);
-		controlPanel.add(btnSaveSelectedNodes);
-		controlPanel.add(btnClearSelectedNodes);
-		controlPanel.add(btnTakeScreenshot);
+		// controlPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		// controlPanel.add(setStartingPointButton);
+		// controlPanel.add(btnSetDestination);
+		// controlPanel.add(btnCalculatePath);
+		// controlPanel.add(btnClearSetNodes);
+		// controlPanel.add(btnSavePath);
+		// controlPanel.add(btnSaveSelectedNodes);
+		// controlPanel.add(btnClearSelectedNodes);
+		// controlPanel.add(btnTakeScreenshot);
 
 	}
 
