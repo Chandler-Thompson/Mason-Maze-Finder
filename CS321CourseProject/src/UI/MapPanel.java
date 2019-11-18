@@ -712,22 +712,6 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
         System.out.println("Translate Y: " + translateY);		
 	}
 	
-	public void setNextClickStart(boolean newValue) {
-		this.nextClickSetsStart = newValue;
-		
-		if (newValue == true) {
-			nextClickSetsDest = false;
-		}
-	}
-	
-	public void setNextClickDest(boolean newValue) {
-		this.nextClickSetsDest = newValue;
-		
-		if (newValue == true) {
-			nextClickSetsStart = false;
-		}
-	}
-	
 	public void clearSelectedNodes() {
 		this.startingNode = null;
 		this.destNode = null;

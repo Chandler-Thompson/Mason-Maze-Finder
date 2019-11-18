@@ -158,9 +158,6 @@ public class MainWindow {
 		mapJPanel.add(mapPanel);
 		mapPanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));*/
 		mapPanel.setLayout(new GridLayout(0, 1, 0, 0));
-
-		MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
-
 		
 		JScrollPane scrollPane = new JScrollPane(mapImageLabel) {	
 			/*@Override
@@ -206,7 +203,6 @@ public class MainWindow {
 		setStartingPointButton.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
 		setStartingPointButton.setBounds(10, 576, 125, 23);
 		setStartingPointButton.setPreferredSize(new  Dimension (200,23));
-
 		setStartingPointButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.setNextClickStart(true);
@@ -256,7 +252,6 @@ public class MainWindow {
 		btnSavePath.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
 		btnSavePath.setBackground(new Color(176, 224, 230));
 		btnSavePath.setBounds(145, 633, 125, 23);
-
 		btnSavePath.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.savePath();
@@ -265,17 +260,20 @@ public class MainWindow {
 		locationPanel.add(btnSavePath);
 
 		JButton btnSaveSelectedNodes = new JButton("Save Selection");
+		btnSaveSelectedNodes.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
+		btnSaveSelectedNodes.setBackground(new Color(176, 224, 230));
+		btnSaveSelectedNodes.setBounds(145, 690, 125, 23);
 		btnSaveSelectedNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.saveSelection();
 			}
-		});		
+		});
+		locationPanel.add(btnSaveSelectedNodes);
 
 		JButton btnClearSelectedNodes = new JButton("Clear Selection");
 		btnClearSelectedNodes.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
 		btnClearSelectedNodes.setBackground(new Color(176, 224, 230));
 		btnClearSelectedNodes.setBounds(280, 633, 125, 23);
-
 		btnClearSelectedNodes.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.clearSelection();
@@ -287,7 +285,6 @@ public class MainWindow {
 		btnTakeScreenshot.setFont(new Font("Yu Gothic UI Semibold", Font.PLAIN, 11));
 		btnTakeScreenshot.setBackground(new Color(176, 224, 230));
 		btnTakeScreenshot.setBounds(145, 519, 125, 23);
-
 		btnTakeScreenshot.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				mapImagePanel.takeScreenshot();
