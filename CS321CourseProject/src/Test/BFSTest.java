@@ -4,17 +4,20 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import Map.Node;
+import Pathfinding.ShortestPathAlgorithm;
 import UI.MainWindow;
 import UI.MapPanel;
 import org.junit.Assert;
 
 public class BFSTest {
-	private static MainWindow mainWindow;
+	private static  MainWindow mainWindow;
 	private static MapPanel mapPanel;
 	private static Node[][] nodes;
 
@@ -72,5 +75,30 @@ public class BFSTest {
 		Assert.assertTrue("Path should contain the starting node.", path.contains(n1));
 		Assert.assertTrue("Path should contain the node inbetween the start and destination nodes.", path.contains(n2));
 		Assert.assertTrue("Path should contain the destination node.", path.contains(n3));		
+	}
+	@Test
+	public void BFSInvalidPathAmount()
+	{
+		Node destNode = nodes[524][705];
+		Node[][]copyNodes = nodes;
+		HashMap<Node,Node>discovered = new HashMap<Node,Node>();
+		LinkedList<Node> path = new LinkedList<Node>();
+		path.add(destNode);
+		ShortestPathAlgorithm alg = new ShortestPathAlgorithm(path,copyNodes);
+		Assert.assertEquals(-1, alg.calculateShortestPath(discovered));//Error caught
+		
+	}
+	@Test
+	public void BFSInvalidNode()
+	{
+		Node startNode = nodes[530][702];
+		Node destNode = nodes[900][0];
+		Node[][]copyNodes = nodes;
+		HashMap<Node,Node>discovered = new HashMap<Node,Node>();
+		LinkedList<Node> path = new LinkedList<Node>();
+		path.add(startNode);
+		path.add(destNode);
+		ShortestPathAlgorithm alg = new ShortestPathAlgorithm(path,copyNodes);
+		Assert.assertEquals(-1, alg.calculateShortestPath(discovered));//Path invalid
 	}
 }

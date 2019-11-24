@@ -62,7 +62,7 @@ public class ShortestPathAlgorithm  {
 			throw new IllegalArgumentException("discovered must be empty.");
 		int ROW = graph.length;
 		int COL = graph[0].length;
-		boolean [][] visitedNodes = new boolean [graph.length][graph[0].length];//refactor to use constants
+		boolean [][] visitedNodes = new boolean [graph.length][graph[0].length];
 		
 		int [] rowNum = {-1,0,0,1};
 		int [] colNum = {0,-1,1,0};
