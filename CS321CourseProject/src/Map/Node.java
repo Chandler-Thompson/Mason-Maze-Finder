@@ -76,11 +76,7 @@ public class Node implements Serializable {
     @Override
     public int hashCode() {
     	// https://stackoverflow.com/questions/919612/mapping-two-integers-to-one-in-a-unique-and-deterministic-way
-    	return (((x + y) * (x + y + 1)) / 2) + 1;	
-    	/*int result = 17;
-    	result = result * 31 + Integer.hashCode(x);
-    	result = result * 31 + Integer.hashCode(y);
-    	return result;*/
+    	return (((x + y) * (x + y + 1)) / 2) + 1;
     }
     
     public boolean isValid() {

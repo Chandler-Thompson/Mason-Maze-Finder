@@ -58,7 +58,7 @@ import User.Profile;
 public class MainWindow {
 
 	private MainFrame frame;
-	private MapPanel mapPanel;
+	private MapPanel mapImagePanel;
 	
 	private BufferedImage mapImage;
 
@@ -173,7 +173,7 @@ public class MainWindow {
 		
 		scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 		
-		final MapPanel mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
+		mapImagePanel = new MapPanel(frame, this.displayImagePath, this.nodesImagePath);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
 		mapPanel.add(mapImagePanel);
 		mapImagePanel.setPreferredSize(new Dimension(mapIcon.getIconWidth(), mapIcon.getIconHeight()));
@@ -328,6 +328,6 @@ public class MainWindow {
 	}
 	
 	public MapPanel getMapPanel() {
-		return this.mapPanel;
+		return this.mapImagePanel;
 	}
 }
