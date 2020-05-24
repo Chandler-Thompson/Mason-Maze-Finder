@@ -3,8 +3,6 @@
 # Mason Maze Finder 
 > This application helps the user (Students, Parents, and Visitors) to find the quickest route between user-specified points on the George Mason University Fairfax Campus, taking into account any user-specified "blockages" (commonly areas under construction).
 
-[![GitHub contributors](https://img.shields.io/github/contributors/Naereen/StrapDown.js.svg)](https://github.com/Chandler-Thompson/Mason-Maze-Finder/graphs/contributors)
-
 ![Generating fastest path to class](CS321CourseProject/GIFs/GeneratesFastestPath.gif)
 
 ---
@@ -75,7 +73,7 @@
 
 | <a href="https://github.com/Chandler-Thompson/">**Richard C Thompson**</a> | <a href="https://github.com/Scusemua">**Ben Carver**</a> | <a href="https://github.com/poobear0803">**Poojah Rajamesh**</a> | <a href="https://github.com/ihaynes99">**Sam Haynes**</a> |
 |---|---|---|---|
-| [![Chandler-Thompson](https://avatars1.githubusercontent.com/u/Chandler-Thompson?v=3&s=200)](https://github.com/Chandler-Thompson/) | [![Scusemua](https://avatars1.githubusercontent.com/u/Scusemua?v=3&s=200)](https://github.com/Scusemua/) | [![poobear0803](https://avatars1.githubusercontent.com/u/poobear0803?v=3&s=200)](https://github.com/poobear0803/) | [![ihaynes99](https://avatars1.githubusercontent.com/u/ihaynes99?v=3&s=200)](https://github.com/ihaynes99/) |
+| [![Chandler-Thompson](https://avatars0.githubusercontent.com/u/6445925?s=200&u=edcfd7115ca072e0ab9eff05302af7b711715941&v=4)](https://github.com/Chandler-Thompson/) | [![Scusemua](https://avatars1.githubusercontent.com/u/4888750?s=200&u=ec1bafde09ce4e16bb6956c01e7d1b5def8566bc&v=4)](https://github.com/Scusemua/) | [![poobear0803](https://avatars1.githubusercontent.com/u/55003023?s=200&v=4)](https://github.com/poobear0803/) | [![ihaynes99](https://avatars3.githubusercontent.com/u/55002928?s=200&v=4)](https://github.com/ihaynes99/) |
 | <a href="https://github.com/Chandler-Thompson/" target="_blank">`github.com/Chandler-Thompson/`</a> | <a href="https://github.com/Scusemua/" target="_blank">`github.com/Scusemua/`</a> | <a href="https://github.com/poobear0803/" target="_blank">`github.com/poobear0803/`</a> | <a href="https://github.com/ihaynes99/" target="_blank">`github.com/ihaynes99/`</a> |
 
 ### Disclaimer:
