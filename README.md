@@ -22,6 +22,7 @@
 ![Fully Explorable Map](CS321CourseProject/GIFs/FullyExplorableMap.gif)
 
 ---
+<br>
 
 > Plot a course from the parking garage to class, class to lunch, and back to your car again! Maximizing your time usage in between classes and after by cutting through buildings, and avoiding construction zones. 
 
@@ -30,11 +31,13 @@
 | ![Fastest Path w/ Dropdowns](CS321CourseProject/GIFs/GeneratesFastestPath.gif) | ![Fastest Path Manually](CS321CourseProject/GIFs/GeneratesFastestPathWithClicking.gif) |
 
 ---
+<br>
 
 > If new construction pops up, or you simply want to avoid a part of campus, just hold right-click and drag to create a `no-go zone`
 
 ![Path Blocked by Construction](CS321CourseProject/GIFs/FastestPathWithConstruction.gif)
 
+---
 <br>
 
 > You don't have to worry about memorizing the route, or carrying around your laptop either, just take a screenshot!
@@ -42,12 +45,14 @@
 ![Take a Screenshot](CS321CourseProject/GIFs/TakeScreenshot.gif)
 
 ---
+<br>
 
 > Lastly, have an unexpected shutdown? (Obviously our application didn't have a problem *wink*) Your `no-go zones` persist on reboot of the application!
 
 ![Selection Persists](CS321CourseProject/GIFs/SelectionPersists.gif)
 
 ---
+<br>
 
 ## What it uses
 
