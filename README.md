@@ -5,7 +5,7 @@
 
 ![Generating fastest path to class](CS321CourseProject/GIFs/GeneratesFastestPath.gif)
 
----
+<br>
 
 ## Table of Contents
 - [What it does](#what-it-does)
@@ -13,7 +13,7 @@
 - [Use it yourself](#use-it-yourself)
 - [The Team](#the-team)
 
----
+<br>
 
 ## What it does
 
@@ -21,7 +21,7 @@
 
 ![Fully Explorable Map](CS321CourseProject/GIFs/FullyExplorableMap.gif)
 
-<br>
+---
 
 > Plot a course from the parking garage to class, class to lunch, and back to your car again! Maximizing your time usage in between classes and after by cutting through buildings, and avoiding construction zones. 
 
@@ -29,9 +29,9 @@
 |---|---|
 | ![Fastest Path w/ Dropdowns](CS321CourseProject/GIFs/GeneratesFastestPath.gif) | ![Fastest Path Manually](CS321CourseProject/GIFs/GeneratesFastestPathWithClicking.gif) |
 
-<br>
+---
 
-> If new construction pops up, or you simply want to avoid a part of campus, just right-click and drag to create a `no-go zone`
+> If new construction pops up, or you simply want to avoid a part of campus, just hold right-click and drag to create a `no-go zone`
 
 ![Path Blocked by Construction](CS321CourseProject/GIFs/FastestPathWithConstruction.gif)
 
@@ -41,7 +41,7 @@
 
 ![Take a Screenshot](CS321CourseProject/GIFs/TakeScreenshot.gif)
 
-<br>
+---
 
 > Lastly, have an unexpected shutdown? (Obviously our application didn't have a problem *wink*) Your `no-go zones` persist on reboot of the application!
 
@@ -60,13 +60,13 @@
 - <a href="http://jung.sourceforge.net/">Jung</a> (Java Universal Network/Graph Framework)
 - <a href="http://www.jgoodies.com/">JGoodies</a> (Java Desktop GUI Library)
 
----
+<br>
 
 ## Use it yourself
 
 - Clone this repo to your local machine: `https://github.com/Chandler-Thompson/Mason-Maze-Finder.git`
 
----
+<br>
 
 ## The Team:
 > Inspired by the navigation difficulties imposed by the construction projects occurring on-campus.
