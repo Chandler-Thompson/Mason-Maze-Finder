@@ -1102,7 +1102,7 @@ public class MapPanel extends JPanel implements MouseWheelListener, MouseListene
 	public void takeScreenshot() {//https://coderanch.com/t/470601/java/screenshot-JPanel
 		BufferedImage bufImage = new BufferedImage(this.getSize().width, this.getSize().height,BufferedImage.TYPE_INT_RGB);
 		this.paint(bufImage.createGraphics());
-		File imageFile = new File("."+File.separator+"src\\Res\\snapshot.jpeg");
+		File imageFile = new File("."+File.separator+"src\\Res\\User Screenshots\\snapshot.jpeg");
 	    try{
 	        imageFile.createNewFile();
 	        ImageIO.write(bufImage, "jpeg", imageFile);
